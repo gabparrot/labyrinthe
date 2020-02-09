@@ -130,6 +130,8 @@ namespace TP1
 
 			Piece piece; //!< La piece contenue dans un noeud d'une liste chaînée circulaire.
 
+			
+			
 			NoeudListePieces* suivant = nullptr; //!< Le noeud suivant
 		};
 
