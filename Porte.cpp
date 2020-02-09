@@ -12,19 +12,20 @@
 
 namespace TP1
 {
-
-    Porte::Porte() {};
+    Porte::Porte() {}
 	
-    Porte::Porte(Couleur c, Piece* d) : color(c), destination(d) {};
+    Porte::Porte(Couleur c, Piece* d) : color(c), destination(d) {}
 	
     Porte::Porte(const Porte&)
     {
         //TODO ne sais pas comment implémenter sans nom d'argument
     }
+	
     Porte::~Porte() {};
 	
     const Porte& Porte::operator=(const Porte& source)
     {
+
 	    if (this != &source)
 	    {
             destination = source.getDestination();
@@ -48,7 +49,5 @@ namespace TP1
 	{
         return destination;
 	}
-
-
 
 }
