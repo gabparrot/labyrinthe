@@ -212,6 +212,109 @@ namespace TP1
 	 }
  }
 
-    //Mettez l'implémentation de vos autres méthodes ici.
+    //==================================================
+	//= Nos méthodes                                   =
+	//==================================================
 
-}//fin du namespace
+	Labyrinthe::Labyrinthe(){}
+
+	Labyrinthe::Labyrinthe(const Labyrinthe& source)
+	{
+		*this = source;
+	}
+
+	Labyrinthe::~Labyrinthe()
+	{
+		//TODO effacer les noeuds de NoeudListePieces par iteration (pointer pointeurs vers adresse 0)
+	}
+
+	const Labyrinthe& Labyrinthe::operator=(const Labyrinthe& source)
+	{
+		depart = source.getDepart();
+		arrivee = source.getArrivee();
+		dernier = source.trouvePiece(source.getArrivee()->getNom());
+		//TODO copier source.NoeudListePieces par iteration
+
+		return *this;
+	}
+
+	int Labyrinthe::solutionner(Couleur joueur)
+	{
+		//TODO
+		return 1;
+	}
+
+	Couleur Labyrinthe::trouveGagnant()
+	{
+ 		//TODO
+		return Couleur::Rouge;
+	}
+
+	bool Labyrinthe::appartient(const Piece& p) const
+	{
+		try
+		{
+			trouvePiece(p.getNom());
+		}
+		catch (logic_error e1)
+		{
+			return false;
+		}
+ 		catch (invalid_argument e2)
+ 		{
+			return false;
+ 		}
+		return true;
+	}
+
+	void Labyrinthe::placeDepart(const std::string& nom)
+	{
+		try
+		{
+			trouvePiece(nom);
+		}
+ 		catch(logic_error e1)
+ 		{
+			throw logic_error("La piece n'existe pas dans le labyrinthe");
+ 		}
+ 		catch(invalid_argument e2)
+ 		{
+			throw logic_error("Le nom de la piece demandee est vide ou invalide");
+ 		}
+ 		//TODO depart = adresse pointeur piece dans noeud depart, doit faire methode getter data dans noeud
+
+	}
+
+	void Labyrinthe::placeArrivee(const std::string& nom)
+	{
+		try
+		{
+			trouvePiece(nom);
+		}
+		catch (logic_error e1)
+		{
+			throw logic_error("La piece n'existe pas dans le labyrinthe");
+		}
+		catch (invalid_argument e2)
+		{
+			throw logic_error("Le nom de la piece demandee est vide ou invalide");
+		}
+		//TODO arrivee = adresse pointeur piece dans noeud arrivee, doit faire methode getter data dans noeud
+
+	}
+
+	Labyrinthe::NoeudListePieces* Labyrinthe::trouvePiece(const std::string& nom) const
+	{
+		//TODO
+		return dernier; // placeholder
+	}
+
+
+	
+
+
+
+
+
+
+}
