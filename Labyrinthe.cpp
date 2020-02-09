@@ -12,8 +12,6 @@
 #include "pch.h"
 #include "Labyrinthe.h"
 
-
-
 using namespace std;
 
 namespace TP1
