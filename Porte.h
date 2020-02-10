@@ -50,7 +50,7 @@ public:
 	~Porte();
 
 	//! Surcharge de l'opérateur =
-	const Porte & operator =(const Porte& source);
+	const Porte & operator =(const Porte&);
 
 	//! Surcharge de l'opérateur ==
 	bool operator ==(const Porte& source) const;
@@ -63,10 +63,11 @@ public:
 
 
 private:
-	Piece * destination; /*!< Vers où la porte mène.*/
-
+	
 	Couleur color; /*!< Couleur de la porte.*/
 	/*!< Cette couleur spécifie en même temps quel est le joueur qui a le droit de franchir cette porte.*/
+	
+	Piece * destination; /*!< Vers où la porte mène.*/
 
 };
 

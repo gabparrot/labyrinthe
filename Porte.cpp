@@ -16,9 +16,10 @@ namespace TP1
 	
     Porte::Porte(Couleur c, Piece* d) : color(c), destination(d) {}
 	
-    Porte::Porte(const Porte&)
+    Porte::Porte(const Porte& source)
     {
-        //TODO ne sais pas comment implémenter sans nom d'argument
+    	//TODO P2. vérifier si on doit copier en profondeur la liste dans obj distinct ou si copie de référence
+        *this = source;
     }
 	
     Porte::~Porte() {};

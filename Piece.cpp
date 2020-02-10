@@ -27,6 +27,8 @@ namespace TP1
         portes.clear();
     }
 
+
+	//TODO P2 Valider que 2 pièces n'ont pas le même nom ?
 	const Piece& Piece::operator=(const Piece& source)
 	{
         portes.clear();

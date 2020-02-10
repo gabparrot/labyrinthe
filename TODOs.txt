@@ -24,3 +24,9 @@ Le plan:
 - Ensuite utiliser algorithme de Dijkstra pour calculer valeur du shortest path pour chaque couleur (chaque couleur a son propre fichier texte)
 - Important d'utiliser une liste de noeuds déjà visités pour ne pas avoir de cycles infinis
 - Retourner quel a le plus petit entre les 4 couleurs
+
+
+===========
+
+Notes:
+- Todos ont priorité P1 > P2 > ...
