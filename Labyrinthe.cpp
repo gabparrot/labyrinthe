@@ -11,6 +11,7 @@
 
 #include "pch.h"
 #include "Labyrinthe.h"
+#include <list>
 
 using namespace std;
 
@@ -206,7 +207,8 @@ namespace TP1
 		 noeud->suivant = noeud;
 		 dernier = noeud;
 	 }
-	 else if (!appartient(p)) {
+	 else if (!appartient(p)) 
+	 {
 		 noeud->suivant = dernier->suivant;
 		 dernier->suivant = noeud;
 	 }
@@ -216,18 +218,39 @@ namespace TP1
 	//= Nos méthodes                                   =
 	//==================================================
 
-	Labyrinthe::Labyrinthe(){}
 
+	 /**
+	 * \brief Constructeur de la classe Labyrinthe
+	 * \return Un objet Labyrinthe
+	 */
+	Labyrinthe::Labyrinthe()
+	{
+	}
+	
+
+	/**
+	 * \brief Constructeur de copie de la classe Labyrinthe
+	 */
 	Labyrinthe::Labyrinthe(const Labyrinthe& source)
 	{
 		*this = source;
 	}
 
+
+	/**
+	 * \brief Destructeur de la classe Labyrinthe
+	 */
 	Labyrinthe::~Labyrinthe()
 	{
 		//TODO effacer les noeuds de NoeudListePieces par iteration (pointer pointeurs vers adresse 0)
 	}
 
+
+	/**
+	 * \brief surcharge de l'opérateur = entre les pièces et le labyrinthe
+	 * \param[in] Labyrinthe source
+	 * \return Objet Labyrinthe avec les pièces
+	 */
 	const Labyrinthe& Labyrinthe::operator=(const Labyrinthe& source)
 	{
 		depart = source.getDepart();
@@ -238,18 +261,62 @@ namespace TP1
 		return *this;
 	}
 
+
+	/**
+	 * \brief Nombre d'étape minimum pour solutionner le labyrinthe pour le joueur en ne passant que par les portes qui correspondent à sa couleur  
+	 * \param[in] Couleur joueur 
+	 * \return int représantant le nombre d'étape minimum
+	 */
 	int Labyrinthe::solutionner(Couleur joueur)
 	{
 		//TODO
 		return 1;
 	}
 
+
+	/**
+	 * \brief Trouve le joueur qui peut solutionner le labyrinthe en le moins de déplacements. Si égalité,
+	 *	priorité au joueur rouge, vert, bleu, puis au jaune
+	 * \return Couleur du gagnant
+	 */
 	Couleur Labyrinthe::trouveGagnant()
 	{
- 		//TODO
-		return Couleur::Rouge;
+		int rouge = solutionner(Couleur::Rouge);
+		int vert = solutionner(Couleur::Vert);
+		int bleu = solutionner(Couleur::Bleu);
+		int jaune = solutionner(Couleur::Jaune);
+
+		if (rouge == -1 && vert == -1 && bleu == -1 && jaune == -1) 
+		{
+			return Couleur::Aucun;
+		}
+
+		if (rouge >= vert && rouge > bleu && rouge > jaune)
+		{
+			return Couleur::Rouge;
+		}
+
+		if(vert > rouge && vert >= bleu && vert > jaune)
+		{
+			return Couleur::Vert;
+		}
+
+		if(bleu > rouge && bleu > vert && bleu >= jaune)
+		{
+			return Couleur::Bleu;
+		}
+
+		if(jaune > rouge && jaune > vert && jaune > bleu)
+		{
+			return Couleur::Jaune;
+		}
 	}
 
+
+	/**
+	 * \brief Vérifie si une pièce portant le nom de la pièce fournie se trouve dans le labyrinthe
+	 * \return True si la pièce fournie se trouve dans le labyrinthe sinon False
+	 */
 	bool Labyrinthe::appartient(const Piece& p) const
 	{
 		try
@@ -267,6 +334,11 @@ namespace TP1
 		return true;
 	}
 
+
+	/**
+	 * \brief Ajuste le pointeur depart au Labyrinthe
+	 * \param[in] String nom: le nom de la pièce
+	 */
 	void Labyrinthe::placeDepart(const std::string& nom)
 	{
 		try
@@ -281,10 +353,14 @@ namespace TP1
  		{
 			throw logic_error("Le nom de la piece demandee est vide ou invalide");
  		}
- 		//TODO depart = adresse pointeur piece dans noeud depart, doit faire methode getter data dans noeud
-
+		//TODO depart = adresse pointeur piece dans noeud depart, doit faire methode getter data dans noeud
 	}
 
+
+	/**
+	 * \brief Ajuste le pointeur arrivee au Labyrinthe
+	 * \param[in] String nom: le nom de la pièce
+	 */
 	void Labyrinthe::placeArrivee(const std::string& nom)
 	{
 		try
@@ -303,6 +379,12 @@ namespace TP1
 
 	}
 
+
+	/**
+	 * \brief Trouver l'adresse du noeud de la liste de pièces du labyrinthe correspondant à la pièce portant le nom nom
+	 * \param[in] String nom: le nom de la pièce
+	 * \return NoeudListePieces : Adresse du noeud de la liste de pièces du labyrinthe correspondant à la pièce
+	 */
 	Labyrinthe::NoeudListePieces* Labyrinthe::trouvePiece(const std::string& nom) const
 	{
 		//TODO
