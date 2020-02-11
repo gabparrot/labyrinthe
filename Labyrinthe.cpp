@@ -214,7 +214,6 @@ namespace TP1
 		 dernier->suivant = noeud;
 	 }
  }
-5
     //==================================================
 	//= Nos méthodes                                   =
 	//==================================================
@@ -307,15 +306,8 @@ namespace TP1
 			} while (noeudCourant->suivant != noeudDepart);
 
 			// Calcul du plus court chemin entre depart et chacune des autres pieces
-			//TODO calcCheminPlusCourt()
+			vector<int> distance = calcCheminPlusCourt(adjListe, getDepart()->getNom());
 			return -1;
-
-			//for (int i = 0; i < adjListe.size(); i++)
-			//{
-			//	for (int = j; j < adjListe[i])
-			//	adjListe[i].push_back(make_pair(, 1));
-			//}
-			
 		/* Plan:
 		 * Sur nodeDepart, met distance 0 et pour tous noeuds visité = true, ensuite pour chaque porte où couleur == couleur, aller à porte->destination
 		 * puis attributer à piece destination ditance = noeudCourant.distance + 1. Ajouter à liste d'adjacence noeudCourant.
@@ -328,11 +320,11 @@ namespace TP1
 	 /**
 	 * \fn Labyrinthe::calcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>>& adjListe, int& start)
 	 * \brief Retourne le chemin le plus court étant donné une liste d'adjacence
-	 * \param[in] adjList La liste d'adjacence
+	 * \param[in] adjListe La liste d'adjacence
 	 * \param[in] debut Le point de départ
 	 */
 	std::vector<int> Labyrinthe::calcCheminPlusCourt(
-		std::vector<std::vector<std::pair<int, int>>>& adjListe, int& debut)
+		std::vector<std::vector<std::pair<string, string>>>& adjListe, string& debut)
 	{
 		vector<int> distance;
 
@@ -340,8 +332,34 @@ namespace TP1
 		int compteurPiece = adjListe.size();
 		for (int i = 0; i < compteurPiece; i++)
 		{
-			//TODO RENDU ICI
+			distance.push_back(100000000);
 		}
+
+		priority_queue <pair<string, int>, vector<pair<string, int>>, greater<pair<string, int>>> file;
+		file.push(make_pair(debut, 0));
+		distance[debut] = 0;
+
+ 		/*TODO eviter un mental breakdown et essayer de comprendre comment j'ai fait pour additionner la string
+ 		 *TODO du nom au lieu de la distance, puis pull la distance à partir dudit nom et additionner correctement */
+ 		
+ 		while(!file.empty())
+ 		{
+			int minDist = file.top().first;
+			file.pop;
+
+ 			for (int i = 0; i < adjListe[minDist].size(); i++)
+ 			{
+				int lien = adjListe[minDist][i].first;
+				int poids = adjListe[minDist][i].second;
+
+ 				if (distance[lien] < distance[minDist] + poids)
+ 				{
+					distance[lien] = distance[minDist] + poids;
+					file.push(make_pair(lien, distance[minDist]));
+ 				}
+ 			}
+ 		}
+		return distance;
 	}
 
 
@@ -352,8 +370,6 @@ namespace TP1
 	 */
 	Couleur Labyrinthe::trouveGagnant()
 	{
- 		//TODO P1
-		return Couleur::Rouge;
 		int rouge = solutionner(Couleur::Rouge);
 		int vert = solutionner(Couleur::Vert);
 		int bleu = solutionner(Couleur::Bleu);
