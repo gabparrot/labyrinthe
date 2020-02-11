@@ -12,17 +12,20 @@
 #ifndef LABYRINTHE_H_
 #define LABYRINTHE_H_
 
+
+// Fournis
 #include <iostream> // Pour les flux d'entrée/sortie
 #include <fstream>  // Pour les fichiers
 #include <sstream>  // Lecture/écriture dans un string, voir la méthode chargeLabyrinthe() fournie
 #include <string>   // Pour le nom de la pièce
 #include <queue>	// Pour utiliser la file de la STL afin de solutionner le labyrinthe
-
 #include <limits>   // Pour l'utilisation de numeric_limits<int>::max()
-
+#include <vector>
 #include "Porte.h"
 #include "Piece.h"
 
+// Ajouté
+#include <vector>   // Pour graphe, paires chemins + distance
 
 namespace TP1
 {
@@ -120,6 +123,11 @@ namespace TP1
 		//! Même chose que pour la fonction placeDepart décrite plus haut, mais pour le pointeur arrivee d'un labyrinthe.
 		void placeArrivee(const std::string& nom);
 
+		//====================
+		//=      Ajouté      =
+		//====================
+		std::vector<int> calcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>>& adjListe, int& debut);
+
 		/**
 		 * \class NoeudListePieces
 		 * \brief Noeud typique d'une liste chaînée circulaire
@@ -128,10 +136,12 @@ namespace TP1
 		{
 		public:
 
+			NoeudListePieces() {};
+			
+			NoeudListePieces(const NoeudListePieces& source);
+
 			Piece piece; //!< La piece contenue dans un noeud d'une liste chaînée circulaire.
 
-			
-			
 			NoeudListePieces* suivant = nullptr; //!< Le noeud suivant
 		};
 
@@ -144,7 +154,7 @@ namespace TP1
 
 		NoeudListePieces* dernier; /*!< Le dernier noeud de la liste chaînée circulaire.*/
 		/*!<  Ce noeuds ne contient pas nécessairement les pièces de départ ou d'arrivée. */
-
+		
 		Piece* depart; /*!< Adresse de la pièce de départ (et non du noeud qui la contient) */
 		Piece* arrivee; /*!< Adresse de la pièce d'arrivée (et non du noeud qui la contient) */
 
@@ -153,3 +163,4 @@ namespace TP1
 }
 
 #endif /* LABYRINTHE_H_ */
+
