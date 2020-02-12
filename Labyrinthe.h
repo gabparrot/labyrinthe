@@ -207,7 +207,7 @@ namespace TP1
 		//! Remarquez qu'il faut retourner l'adresse du noeud et non l'adresse de la pièce.
 		NoeudListePieces* trouvePiece(const std::string& nom) const;
 
-		NoeudListePieces* dernier; /*!< Le dernier noeud de la liste chaînée circulaire.*/
+		NoeudListePieces* dernier = nullptr; /*!< Le dernier noeud de la liste chaînée circulaire.*/
 		/*!<  Ce noeuds ne contient pas nécessairement les pièces de départ ou d'arrivée. */
 		
 		Piece* depart; /*!< Adresse de la pièce de départ (et non du noeud qui la contient) */
