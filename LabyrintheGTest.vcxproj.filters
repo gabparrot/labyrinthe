@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Labyrinthe.cpp" />
+    <ClCompile Include="Piece.cpp" />
+    <ClCompile Include="Porte.cpp" />
+    <ClCompile Include="Principal.cpp" />
+    <ClCompile Include="test.cpp" />
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Labyrinthe.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Piece.h" />
+    <ClInclude Include="Porte.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODOs.txt" />
+    <Text Include="data\vert2x3.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="data\vert10x10.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="data\rouge10x10.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="data\rouge2x3.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="data\jaune10x10.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="data\jaune2x3.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="data\bleu10x10.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="data\bleu2x3.txt">
+      <Filter>data</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="data">
+      <UniqueIdentifier>{bede7548-7fe2-420a-9dc6-8f95c90b4b52}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

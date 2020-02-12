@@ -22,9 +22,9 @@ int main()
 	cout << "Labyrinthe 2x3 :" << endl;
 	try
 	{
-		Labyrinthe lab {};
+		Labyrinthe lab{};
 
-		ifstream entree {};
+		ifstream entree{};
 		entree.open("data/rouge2x3.txt", ios::in);
 		if (!entree.is_open())
 		{
@@ -37,7 +37,7 @@ int main()
 		entree.close(); //on ferme le fichier
 
 		entree.open("data/vert2x3.txt", ios::in);
-        if (!entree.is_open())
+		if (!entree.is_open())
 		{
 			cout << "Fichier vert introuvable.\n";
 			return 1;
@@ -48,7 +48,7 @@ int main()
 		entree.close();
 
 		entree.open("data/bleu2x3.txt", ios::in);
-        if (!entree.is_open())
+		if (!entree.is_open())
 		{
 			cout << "Fichier bleu introuvable.\n";
 			return 1;
@@ -59,7 +59,7 @@ int main()
 		entree.close();
 
 		entree.open("data/jaune2x3.txt", ios::in);
-        if (!entree.is_open())
+		if (!entree.is_open())
 		{
 			cout << "Fichier jaune introuvable.\n\n";
 			return 1;
@@ -70,13 +70,13 @@ int main()
 		entree.close();
 
 		cout << "\nLe joueur rouge peut solutionner le labyrinthe en "
-				<< lab.solutionner(Couleur::Rouge) << " déplacements.\n";
+			<< lab.solutionner(Couleur::Rouge) << " déplacements.\n";
 		cout << "\nLe joueur vert peut solutionner le labyrinthe en "
-				<< lab.solutionner(Couleur::Vert) << " déplacements.\n";
+			<< lab.solutionner(Couleur::Vert) << " déplacements.\n";
 		cout << "\nLe joueur bleu peut solutionner le labyrinthe en "
-				<< lab.solutionner(Couleur::Bleu) << " déplacements.\n";
+			<< lab.solutionner(Couleur::Bleu) << " déplacements.\n";
 		cout << "\nLe joueur jaune peut solutionner le labyrinthe en "
-				<< lab.solutionner(Couleur::Jaune) << " déplacements.\n";
+			<< lab.solutionner(Couleur::Jaune) << " déplacements.\n";
 
 		Couleur LeGagnant = lab.trouveGagnant();
 		switch (LeGagnant)
@@ -93,20 +93,21 @@ int main()
 			cout << endl << "Le joueur gagnant: aucun!!" << endl << endl; break;
 		}
 
-	} catch (exception & e)
+	}
+	catch (exception & e)
 	{
 		cerr << e.what() << endl;
 	}
 	cout << "Labyrinthe 10x10 :" << endl;
 	try
 	{
-		Labyrinthe lab2 {};
+		Labyrinthe lab2{};
 
-        ifstream entree {};
+		ifstream entree{};
 
 		entree.open("data/rouge10x10.txt", ios::in);
 
-        if (!entree.is_open())
+		if (!entree.is_open())
 		{
 			cout << "Fichier rouge introuvable.\n";
 			return 1;
@@ -117,7 +118,7 @@ int main()
 		entree.close(); //on ferme le fichier
 
 		entree.open("data/vert10x10.txt", ios::in);
-        if (!entree.is_open())
+		if (!entree.is_open())
 		{
 			cout << "Fichier vert introuvable.\n";
 			return 1;
@@ -128,7 +129,7 @@ int main()
 		entree.close();
 
 		entree.open("data/bleu10x10.txt", ios::in);
-        if (!entree.is_open())
+		if (!entree.is_open())
 		{
 			cout << "Fichier bleu introuvable.\n";
 			return 1;
@@ -139,7 +140,7 @@ int main()
 		entree.close();
 
 		entree.open("data/jaune10x10.txt", ios::in);
-        if (!entree.is_open())
+		if (!entree.is_open())
 		{
 			cout << "Fichier jaune introuvable.\n\n";
 			return 1;
@@ -150,13 +151,13 @@ int main()
 		entree.close();
 
 		cout << "\nLe joueur rouge peut solutionner le labyrinthe en "
-				<< lab2.solutionner(Couleur::Rouge) << " déplacements.\n";
+			<< lab2.solutionner(Couleur::Rouge) << " déplacements.\n";
 		cout << "\nLe joueur vert peut solutionner le labyrinthe en "
-				<< lab2.solutionner(Couleur::Vert) << " déplacements.\n";
+			<< lab2.solutionner(Couleur::Vert) << " déplacements.\n";
 		cout << "\nLe joueur bleu peut solutionner le labyrinthe en "
-				<< lab2.solutionner(Couleur::Bleu) << " déplacements.\n";
+			<< lab2.solutionner(Couleur::Bleu) << " déplacements.\n";
 		cout << "\nLe joueur jaune peut solutionner le labyrinthe en "
-				<< lab2.solutionner(Couleur::Jaune) << " déplacements.\n";
+			<< lab2.solutionner(Couleur::Jaune) << " déplacements.\n";
 
 		Couleur LeGagnant = lab2.trouveGagnant();
 		switch (LeGagnant)
@@ -173,7 +174,8 @@ int main()
 			cout << endl << "Le joueur gagnant: aucun!!" << endl << endl; break;
 		}
 
-	} catch (exception & e)
+	}
+	catch (exception & e)
 	{
 		cerr << e.what() << endl;
 	}

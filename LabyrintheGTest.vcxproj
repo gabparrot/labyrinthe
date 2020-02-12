@@ -55,6 +55,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="data\bleu10x10.txt" />
+    <Text Include="data\bleu2x3.txt" />
+    <Text Include="data\jaune10x10.txt" />
+    <Text Include="data\jaune2x3.txt" />
+    <Text Include="data\rouge10x10.txt" />
+    <Text Include="data\rouge2x3.txt" />
+    <Text Include="data\vert10x10.txt" />
+    <Text Include="data\vert2x3.txt" />
     <Text Include="TODOs.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />

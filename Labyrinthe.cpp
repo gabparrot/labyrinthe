@@ -9,7 +9,7 @@
 
  //Fichiers à compléter par les autres méthodes de la classe Labyrinthes demandées
 
- //#include "pch.h"
+#include "pch.h"
 #include "Labyrinthe.h"
 #include <list>
 #include <functional>
@@ -23,12 +23,12 @@ namespace TP1
     //	Méthodes fournies
     // -------------------------------------------------------------------------------------------------
 
-    /**
-    * \fn Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream & entree)
-    * \brief Fonction déjà fournie permettant de charger un labyrinthe depuis un fichier
-    * \param[in] couleur La couleur du jouer auquel le labyrinthe chargé s'applique
-    * \param[in] entree Fichier contenant la définition du labyrinthe
-    */
+ /**
+  * \fn Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream & entree)
+  * \brief Fonction déjà fournie permettant de charger un labyrinthe depuis un fichier
+  * \param[in] couleur La couleur du jouer auquel le labyrinthe chargé s'applique
+  * \param[in] entree Fichier contenant la définition du labyrinthe
+  */
     void Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream& entree)
     {
         int nbCols, nbRangs;
@@ -159,14 +159,14 @@ namespace TP1
 
 
     /**
-    * \fn Labyrinthe::ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2)
-    * \brief Fonction déjà fournie permettant d'ajouter une porte à une pièce
-    * \param[in]	Couleur couleur Couleur de la porte à ajouter
-    * \param[in]	int i1
-    * \param[in]	int j1
-    * \param[in]	int i2
-    * \param[in]	int j2
-    */
+     * \fn Labyrinthe::ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2)
+     * \brief Fonction déjà fournie permettant d'ajouter une porte à une pièce
+     * \param[in]	Couleur couleur Couleur de la porte à ajouter
+     * \param[in]	int i1
+     * \param[in]	int j1
+     * \param[in]	int i2
+     * \param[in]	int j2
+     */
     void Labyrinthe::ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2)
     {
 
@@ -194,27 +194,28 @@ namespace TP1
 
 
     /**
-    * \fn Labyrinthe::ajoutePieceLabyrinthe(Piece & p)
-    * \brief Fonction déjà fournie permettant d'ajouter une pièce au labyrinthe (si elle ne s'y trouve pas déjà)
-    * \param[in]	p La pièce à ajouter
-    * \post	La pièce appartient au labyrinthe;
-    */
+     * \fn Labyrinthe::ajoutePieceLabyrinthe(Piece & p)
+     * \brief Fonction déjà fournie permettant d'ajouter une pièce au labyrinthe (si elle ne s'y trouve pas déjà)
+     * \param[in]	p La pièce à ajouter
+     * \post	La pièce appartient au labyrinthe;
+     */
     void Labyrinthe::ajoutePieceLabyrinthe(const Piece& p)
     {
-        Labyrinthe::NoeudListePieces* noeud = new Labyrinthe::NoeudListePieces;
-        noeud->piece = p;
+        NoeudListePieces noeud;
+        NoeudListePieces* ptrNoeud = &noeud;
+        ptrNoeud->piece = p;
 
         if (dernier == nullptr)
         {
-            noeud->suivant = noeud;
-            dernier = noeud;
+            ptrNoeud->suivant = ptrNoeud;
+            dernier = ptrNoeud;
         }
-        else if (!appartient(p))
-        {
-            noeud->suivant = dernier->suivant;
-            dernier->suivant = noeud;
+        else if (!appartient(p)) {
+            ptrNoeud->suivant = dernier->suivant;
+            dernier->suivant = ptrNoeud;
         }
     }
+
     //==================================================
     //= Nos méthodes                                   =
     //==================================================
@@ -243,7 +244,7 @@ namespace TP1
      */
     Labyrinthe::~Labyrinthe()
     {
-        //TODO effacer les noeuds de NoeudListePieces par iteration (pointer pointeurs vers adresse 0)
+        //TODO Libérer la mémoire correctement
     }
 
 
@@ -272,12 +273,11 @@ namespace TP1
      */
     int Labyrinthe::solutionner(Couleur joueur)
     {
-        //TODO P1
-
+        
         if (depart == arrivee || trouvePiece(depart->getNom())->suivant == nullptr)
-        {
             return -1;
-        }
+
+        int indexArrivee = -1;
 
         // Initialisation de la liste d'adjacence
         std::vector<std::vector<std::pair<int, int>>> adjListe;
@@ -288,42 +288,30 @@ namespace TP1
 
         // Ajouter un vector pour chaque piece
         int compteur = 0;
-        do {
-            int distance = 1;
 
-            std::vector<std::pair<std::string, int>> piece_Pesee;
-            adjListe.push_back(piece_Pesee);
+        do {
+            std::vector<std::pair<int, int>> piecePesee;
+            adjListe.push_back(piecePesee);
             std::list<Porte> portesIci = noeudCourant->piece.getPortes();
             std::list<Porte>::const_iterator iterPortes = portesIci.begin();
 
             for (iterPortes = portesIci.begin(); iterPortes != portesIci.end(); ++iterPortes)
             {
                 if (iterPortes->getCouleur() == joueur)
-                {
-                    adjListe[compteur].push_back(std::make_pair(iterPortes->getDestination()->getNom(), 1));
-                }
+                    adjListe[compteur].push_back(std::make_pair(compteur, 1));
             }
 
-            //TODO ??ajouter que distance depart->depart est 0 après la loop??
             noeudCourant = noeudCourant->suivant;
-        } while (noeudCourant->suivant != noeudDepart);
+            if (noeudCourant == noeudArrivee)
+                indexArrivee = compteur; // Le noeud contenant la pice <arrivee> peut être n'importe où
+
+        } while (noeudCourant != noeudDepart);
 
         // Calcul du plus court chemin entre depart et chacune des autres pieces
-        int p_debut = 0;
-        std::vector<int> distance = calcCheminPlusCourt(adjListe, p_debut);
-        return -1;
-        /* Plan:
-         * Sur nodeDepart, met distance 0 et pour tous noeuds visité = true, ensuite pour chaque porte où couleur == couleur, aller à porte->destination
-         * puis attributer à piece destination ditance = noeudCourant.distance + 1. Ajouter à liste d'adjacence noeudCourant.
-         * Ensuite, parcourir tous les noeuds->piece->visité == false, puis verifier si a porte où destination == noeudCourant.
-         * Si oui, ajouter distance +1 et ajouter à liste d'adjacence noeudCourant
-         * Ensuite,
-         */
+        std::vector<int> distance = calcCheminPlusCourt(adjListe, compteur);
+
+        return indexArrivee == -1 ? -1 : distance[indexArrivee];
     }
-
-    
-
-
 
 
     /**
@@ -332,49 +320,40 @@ namespace TP1
         * \param[in] adjListe La liste d'adjacence
         * \param[in] debut Le point de départ
         */
-    std::vector<int> Labyrinthe::calcCheminPlusCourt(std::vector<std::vector<std::pair<std::string, int>>>& adjListe, int debut)
+    std::vector<int> Labyrinthe::calcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>> &adjListe, int taille)
     {
         std::vector<int> distance;
-        //TODO TEST
-        return distance;
-        /*
-        // Donner une valeur de départ "infinie" à tous les chemins
-        int compteurPiece = adjListe.size();
-        for (int i = 0; i < compteurPiece; i++)
+        
+        // Donner une valeur de départ "infinie" à tous les chemins (et pas std::INFINITY car c'est un float)
+        for (int i = 0; i < taille; i++)
         {
-            distance.push_back(INFINI); // ne pas utiliser std::infinity car float
+            distance.push_back(INFINI); 
         }
 
         std::priority_queue <std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> file;
-        file.push(make_pair(debut, 0));
-        distance[debut] = 0;
+        file.push(make_pair(0, 0));
+        distance[0] = 0;
 
-        //TODO ? Possibilité de changer ma structure de liste d'adj.
-        //       NOW: Vecteur, contenant 1 vecteurs par piece, contenant plusieurs pairs pour portes
-        //       APRÈS: PAIR (nom, piece-vecteur) contenant VECTOR contenant PAIR
-        /*TODO eviter un mental breakdown et essayer de comprendre comment j'ai fait pour additionner la string
-         *TODO du nom au lieu de la distance, puis pull la distance à partir dudit nom et additionner correctement
-
-        while(!file.empty())
+        while (!file.empty())
         {
-            int minDist = file.top().first;
-            file.pop;
+            int minPiece = file.top().first;
+            file.pop();
 
-            for (int i = 0; i < adjListe[minDist].size(); i++)
+            // Parcourir les pieces adjacentes à 
+            for (int i = 0; i < adjListe[minPiece].size(); i++)
             {
-                int lien = adjListe[minDist][i].first;
-                int poids = adjListe[minDist][i].second;
+                int connectee = adjListe[minPiece][i].first;
+                int poids     = adjListe[minPiece][i].second;
 
-                if (distance[lien] < distance[minDist] + poids)
+                if (distance[connectee] < distance[minPiece] + poids)
                 {
-                    distance[lien] = distance[minDist] + poids;
-                    file.push(make_pair(lien, distance[minDist]));
+                    distance[connectee] = distance[minPiece] + poids;
+                    file.push(make_pair(connectee, distance[minPiece]));
                 }
             }
         }
 
         return distance;
-        */
     }
 
 
@@ -426,7 +405,9 @@ namespace TP1
     {
         try
         {
-            trouvePiece(p.getNom());
+            NoeudListePieces* verificateur = trouvePiece(p.getNom());
+            if (verificateur != nullptr)
+                return true;
         }
         catch (logic_error e1)
         {
@@ -436,9 +417,9 @@ namespace TP1
         {
             return false;
         }
-        return true;
+        return false;
     }
-
+    
 
     /**
      * \brief Ajuste le pointeur depart au Labyrinthe
@@ -448,7 +429,7 @@ namespace TP1
     {
         try
         {
-            trouvePiece(nom);
+            depart = &trouvePiece(nom)->piece;
         }
         catch (logic_error e1)
         {
@@ -470,7 +451,7 @@ namespace TP1
     {
         try
         {
-            trouvePiece(nom);
+            arrivee = &trouvePiece(nom)->piece;
         }
         catch (logic_error e1)
         {
@@ -480,8 +461,10 @@ namespace TP1
         {
             throw logic_error("Le nom de la piece demandee est vide ou invalide");
         }
-        //TODO arrivee = adresse pointeur piece dans noeud arrivee, doit faire methode getter data dans noeud
+    }
 
+    Labyrinthe::NoeudListePieces::NoeudListePieces()
+    {
     }
 
 
@@ -490,6 +473,7 @@ namespace TP1
      * \param[in] String nom: le nom de la pièce
      * \return NoeudListePieces : Adresse du noeud de la liste de pièces du labyrinthe correspondant à la pièce
      */
+
     Labyrinthe::NoeudListePieces* Labyrinthe::trouvePiece(const std::string& nom) const
     {
         if (nom.empty())
@@ -497,7 +481,10 @@ namespace TP1
             throw invalid_argument("Aucun nom de pièce reçu");
         }
 
+        // TODO PROBLÈME ICI, NE PEUT PAS LIRE DERNIER AVANT QU'IL SOIT INITIALISÉ LORS DU CHARGEMENT PREMIÈRE PIÈCE
         NoeudListePieces* noeudCourant = dernier;
+
+
 
         do
         {
@@ -505,14 +492,16 @@ namespace TP1
             {
                 return noeudCourant;
             }
+
             if (noeudCourant->suivant == nullptr)
             {
                 throw logic_error("Piece introuvable");
             }
+
             noeudCourant = noeudCourant->suivant;
         } while (noeudCourant->suivant != dernier);
 
-        throw logic_error("Pièce introubable");
+        throw logic_error("Pièce introuvable");
 
     }
 
@@ -524,107 +513,107 @@ namespace TP1
 
 
     //=====///
-    std::vector<int> Labyrinthe::TESTcalcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>>& adjListe,
-        int& debut)
-    {
+    //std::vector<int> Labyrinthe::TESTcalcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>>& adjListe,
+    //    int& debut)
+    //{
 
-    }
+    //}
 
-    int Labyrinthe::TESTsolutionner(Couleur joueur)
-    {
-        // COMMENCER À CREER NOEUDS AVEC DEPART, PAS OBLIGÉ DE FINIR À ARRIVÉE
-        // CRÉER COMPTER QUI SERA INDEX "DEST" DANS LA STRUCT. AVANT, VERIFIER SI NOEUD = A ARRIVEE POUR SAVE SON INDEX
-
-
-
-        int indexArrivee = 99; // PLACEHOLDER
-        return -1;
-    }
-
-    struct Labyrinthe::NoeudListeAdj* Labyrinthe::creerNoeudAdj(int dest, int poids)
-    {
-        struct NoeudListeAdj* leNoeud = (struct NoeudListeAdj*) malloc(sizeof(struct NoeudListeAdj));
-        leNoeud->dest = dest;
-        leNoeud->poids = poids;
-        leNoeud->suivant = NULL;
-
-        return leNoeud;
-    }
-
-    Labyrinthe::Graphe* Labyrinthe::initGraphe(int nbPieces)
-    {
-        struct Graphe* graphe = (struct Graphe*) malloc(sizeof(struct Graphe));
-        graphe->nbPieces = nbPieces;
-        graphe->tableauListesAdj = (struct ListeAdj*) malloc(nbPieces);
-
-        for (int i = 0; i < nbPieces; ++i)
-        {
-            graphe->tableauListesAdj[i].tete = NULL;
-        }
-
-        return graphe;
-    }
-
-    void Labyrinthe::ajouterCheminDansGraphe(Graphe* graphe, int origine, int dest, int poids)
-    {
-        // Ajouter chemin de origine vers destination (au début)
-        struct NoeudListeAdj* leNoeud = creerNoeudAdj(dest, poids);
-        leNoeud->suivant = graphe->tableauListesAdj[origine].tete;
-        graphe->tableauListesAdj[origine].tete = leNoeud;
-
-        // Ajouter chemin de destination vers origine aussi
-        leNoeud = creerNoeudAdj(origine, poids);
-        leNoeud->suivant = graphe->tableauListesAdj[dest].tete;
-        graphe->tableauListesAdj[dest].tete = leNoeud;
-    }
+    //int Labyrinthe::TESTsolutionner(Couleur joueur)
+    //{
+    //    // COMMENCER À CREER NOEUDS AVEC DEPART, PAS OBLIGÉ DE FINIR À ARRIVÉE
+    //    // CRÉER COMPTER QUI SERA INDEX "DEST" DANS LA STRUCT. AVANT, VERIFIER SI NOEUD = A ARRIVEE POUR SAVE SON INDEX
 
 
-    Labyrinthe::NoeudMinMonceau* Labyrinthe::creerNoeudMinMonceau(int nbPieces, int distance)
-    {
-        struct NoeudMinMonceau* noeudMinMonceau = (struct NoeudMinMonceau*) malloc(sizeof(struct NoeudMinMonceau));
-        noeudMinMonceau->nbPieces = nbPieces;
-        noeudMinMonceau->distance = distance;
-        return noeudMinMonceau;
-    }
 
-    Labyrinthe::MinMonceau* Labyrinthe::creerMinMonceau(int capacite)
-    {
-        struct MinMonceau* minMonceau = (struct MinMonceau*) malloc(sizeof(struct MinMonceau));
-        minMonceau->position = (int*)malloc(capacite * sizeof(int));
-        minMonceau->taille = 0;
-        minMonceau->capacite = capacite;
-        minMonceau->tableauMonceau = (struct NoeudMinMonceau**) malloc(capacite * sizeof(struct NoeudMinMonceau*));
+    //    int indexArrivee = 99; // PLACEHOLDER
+    //    return -1;
+    //}
 
-        return minMonceau;
-    }
+    //struct Labyrinthe::NoeudListeAdj* Labyrinthe::creerNoeudAdj(int dest, int poids)
+    //{
+    //    struct NoeudListeAdj* leNoeud = (struct NoeudListeAdj*) malloc(sizeof(struct NoeudListeAdj));
+    //    leNoeud->dest = dest;
+    //    leNoeud->poids = poids;
+    //    leNoeud->suivant = NULL;
 
-    void Labyrinthe::swapNoeudMinMonceau(NoeudMinMonceau** a, NoeudMinMonceau** b)
-    {
-        struct NoeudMinMonceau* temp = *a;
-        *a = *b;
-        *b = temp;
-    }
+    //    return leNoeud;
+    //}
 
-    void Labyrinthe::gererMonceau(MinMonceau* minMonceau, int idx)
-    {
-        int plusPetit = idx;
-        int gauche = 2 * idx + 1;
-        int droite = 2 * idx + 2;
+    //Labyrinthe::Graphe* Labyrinthe::initGraphe(int nbPieces)
+    //{
+    //    struct Graphe* graphe = (struct Graphe*) malloc(sizeof(struct Graphe));
+    //    graphe->nbPieces = nbPieces;
+    //    graphe->tableauListesAdj = (struct ListeAdj*) malloc(nbPieces);
 
-        if (gauche < minMonceau->taille && minMonceau->tableauMonceau[gauche]->distance minMonceau->tableauMonceau[plusPetit]->distance)
-        {
-            plusPetit = gauche;
-        }
+    //    for (int i = 0; i < nbPieces; ++i)
+    //    {
+    //        graphe->tableauListesAdj[i].tete = NULL;
+    //    }
 
-        if (droite < minMonceau->taille && minMonceau->tableauMonceau[droite]->distance minMonceau->tableauMonceau[plusPetit]->distance)
-        {
-            plusPetit = droite;
-        }
+    //    return graphe;
+    //}
 
-        if (plusPetit != idx)
-        {
-            // Les Noeuds à échanger
+    //void Labyrinthe::ajouterCheminDansGraphe(Graphe* graphe, int origine, int dest, int poids)
+    //{
+    //    // Ajouter chemin de origine vers destination (au début)
+    //    struct NoeudListeAdj* leNoeud = creerNoeudAdj(dest, poids);
+    //    leNoeud->suivant = graphe->tableauListesAdj[origine].tete;
+    //    graphe->tableauListesAdj[origine].tete = leNoeud;
 
-        }
-    }
+    //    // Ajouter chemin de destination vers origine aussi
+    //    leNoeud = creerNoeudAdj(origine, poids);
+    //    leNoeud->suivant = graphe->tableauListesAdj[dest].tete;
+    //    graphe->tableauListesAdj[dest].tete = leNoeud;
+    //}
+
+
+    //Labyrinthe::NoeudMinMonceau* Labyrinthe::creerNoeudMinMonceau(int nbPieces, int distance)
+    //{
+    //    struct NoeudMinMonceau* noeudMinMonceau = (struct NoeudMinMonceau*) malloc(sizeof(struct NoeudMinMonceau));
+    //    noeudMinMonceau->nbPieces = nbPieces;
+    //    noeudMinMonceau->distance = distance;
+    //    return noeudMinMonceau;
+    //}
+
+    //Labyrinthe::MinMonceau* Labyrinthe::creerMinMonceau(int capacite)
+    //{
+    //    struct MinMonceau* minMonceau = (struct MinMonceau*) malloc(sizeof(struct MinMonceau));
+    //    minMonceau->position = (int*)malloc(capacite * sizeof(int));
+    //    minMonceau->taille = 0;
+    //    minMonceau->capacite = capacite;
+    //    minMonceau->tableauMonceau = (struct NoeudMinMonceau**) malloc(capacite * sizeof(struct NoeudMinMonceau*));
+
+    //    return minMonceau;
+    //}
+
+    //void Labyrinthe::swapNoeudMinMonceau(NoeudMinMonceau** a, NoeudMinMonceau** b)
+    //{
+    //    struct NoeudMinMonceau* temp = *a;
+    //    *a = *b;
+    //    *b = temp;
+    //}
+
+    //void Labyrinthe::gererMonceau(MinMonceau* minMonceau, int idx)
+    //{
+    //    int plusPetit = idx;
+    //    int gauche = 2 * idx + 1;
+    //    int droite = 2 * idx + 2;
+
+    //    if (gauche < minMonceau->taille && minMonceau->tableauMonceau[gauche]->distance minMonceau->tableauMonceau[plusPetit]->distance)
+    //    {
+    //        plusPetit = gauche;
+    //    }
+
+    //    if (droite < minMonceau->taille && minMonceau->tableauMonceau[droite]->distance minMonceau->tableauMonceau[plusPetit]->distance)
+    //    {
+    //        plusPetit = droite;
+    //    }
+
+    //    if (plusPetit != idx)
+    //    {
+    //        // Les Noeuds à échanger
+
+    //    }
+    //}
 }
