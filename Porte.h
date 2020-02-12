@@ -50,7 +50,7 @@ public:
 	~Porte();
 
 	//! Surcharge de l'opérateur =
-	const Porte & operator =(const Porte&);
+	const Porte& operator =(const Porte&);
 
 	//! Surcharge de l'opérateur ==
 	bool operator ==(const Porte& source) const;

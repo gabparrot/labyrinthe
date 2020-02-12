@@ -93,59 +93,9 @@ namespace TP1
 		//!
 		//!	Tant qu'il reste des pièces dans la file et que la pièce d'arrivée n'a pas encore été atteinte (défilée).
 		int solutionner(Couleur joueur);
+
 		std::vector<int> Labyrinthe::calcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>> &adjListe, int taille);
 
-		// ========================== DEBUT TEST ZONE ==================================\\
-		////TODO: TEST là pour essayer nouvelle approche//
-		//int TESTsolutionner(Couleur joueur);
-		////std::vector<int> TESTcalcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>>& adjListe);
-		//
-		//// Structure représentant un Noeud de la liste d'adjacence
-		//struct NoeudListeAdj
-		//{
-		//	int dest;
-		//	int poids;
-		//	struct NoeudListeAdj* suivant;
-		//};
-
-		//// Structure représentant une Liste d'adjacence
-		//struct ListeAdj
-		//{
-		//	struct NoeudListeAdj* tete; // DOIT ÊTRE LE POINT DE DEPART
-		//};
-
-		//// Structure représentant un Graphe pour l'algo de Dijkstra
-		//struct Graphe
-		//{
-		//	int nbPieces;
-		//	struct ListeAdj* tableauListesAdj;
-		//};
-		//
-		//struct NoeudListeAdj* creerNoeudAdj(int dest, int poids);
-
-		//struct Graphe* initGraphe(int nbPieces);
-
-		//void ajouterCheminDansGraphe(struct Graphe* graphe, int origine, int dest, int poids);
-
-  //      struct NoeudMinMonceau
-  //      {
-		//	int nbPieces;
-		//	int distance;
-  //      };
-
-  //      struct MinMonceau
-  //      {
-		//	int  taille;
-		//	int  capacite;
-		//	int* position;
-		//	struct NoeudMinMonceau** tableauMonceau;
-  //      };
-
-		//struct NoeudMinMonceau* creerNoeudMinMonceau(int nbPieces, int distance);
-		//struct MinMonceau* creerMinMonceau(int capacite);
-		//void swapNoeudMinMonceau(struct NoeudMinMonceau** a, struct NoeudMinMonceau** b);
-		//void gererMonceau(struct MinMonceau* minMonceau, int idx);
-		//====================== FIN TEST ZONE =======================================\\
 
 		//! Cette méthode devra appeler quatre fois la méthode solutionner(), une fois par couleur, pour déterminer
 		//! quel est le joueur qui peut solutionner le labyrinthe en le moins de déplacements. Si aucun joueur ne peut
@@ -177,11 +127,6 @@ namespace TP1
 
 		//! Même chose que pour la fonction placeDepart décrite plus haut, mais pour le pointeur arrivee d'un labyrinthe.
 		void placeArrivee(const std::string& nom);
-
-		//====================
-		//=      Ajouté      =
-		//====================
-		
 
 		/**
 		 * \class NoeudListePieces
