@@ -79,6 +79,7 @@ int main()
 			<< lab.solutionner(Couleur::Jaune) << " déplacements.\n";
 
 		Couleur LeGagnant = lab.trouveGagnant();
+
 		switch (LeGagnant)
 		{
 		case Couleur::Rouge:

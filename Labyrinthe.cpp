@@ -280,38 +280,70 @@ namespace TP1
         int indexArrivee = -1;
 
         // Initialisation de la liste d'adjacence
-        std::vector<std::vector<std::pair<int, int>>> adjListe;
+        // Je pèse la distance entre chaque piece avec les autres, pas seulement origine avec les autres
+        // chaque index = une piece, contenant chacun vecteurs <"IndexPieceDestination", "nbMinChemin entre piece origine et desti> 
+        std::vector<std::vector<std::pair<int, int>>> adjListe; // Paire = < pièce destination , distance min avec origine (cet index)> 
 
         NoeudListePieces* noeudDepart  = trouvePiece(getDepart()->getNom());
         NoeudListePieces* noeudArrivee = trouvePiece(getArrivee()->getNom());
         NoeudListePieces* noeudCourant = noeudDepart;
 
-        // Ajouter un vector pour chaque piece
-        int compteur = 0;
+        // Dictionnaire de numéros pour chaque nom de pièce
+        std::map<std::string, int> idPieces; // <"Nom", "ID #">
 
-        do {
-            std::vector<std::pair<int, int>> piecePesee;
-            adjListe.push_back(piecePesee);
-            std::list<Porte> portesIci = noeudCourant->piece.getPortes();
-            std::list<Porte>::const_iterator iterPortes = portesIci.begin();
+        int nbPieces = 0;
 
-            for (iterPortes = portesIci.begin(); iterPortes != portesIci.end(); ++iterPortes)
-            {
-                if (iterPortes->getCouleur() == joueur)
-                    adjListe[compteur].push_back(std::make_pair(compteur, 1));
-            }
+        // Comptage du nb de pièces avec compteur jusqu'à revenir au même noeud
+        do
+        {
+            // Ajouter une entrée vide <int, int> pour chaque pièce (contiendra <dest,dist> après)
+            vector<pair<int, int>> unePiece;
+            adjListe.push_back(unePiece);
+
+            // Donner un numero au lieu d'un nom
+            idPieces.insert({noeudCourant->piece.getNom(), nbPieces});
 
             noeudCourant = noeudCourant->suivant;
-            if (noeudCourant == noeudArrivee)
-                indexArrivee = compteur; // Le noeud contenant la pice <arrivee> peut être n'importe où
-
-            compteur++;
+            nbPieces++;
         } while (noeudCourant != noeudDepart);
 
-        // Calcul du plus court chemin entre depart et chacune des autres pieces
-        std::vector<int> distance = calcCheminPlusCourt(adjListe, compteur);
+        // Mettre listes de toutes couleurs portes chaque piece dans vecteur
+        // Boucle concentrique ici ne devrait pas causer O(n2) car chaque pièce aura tjr 1 seule liste portes
+        noeudCourant = noeudDepart;
+        std::vector<int> nbPortesParPiece;
 
-        return indexArrivee == -1 ? -1 : distance[indexArrivee];
+        for (int iterPieces = 0; iterPieces < nbPieces; iterPieces++)
+        {
+            std::list<Porte> listePortesIci = noeudCourant->piece.getPortes();
+            int totalPortesIci = listePortesIci.size();
+
+            for (int iterPortes = 0; iterPortes < totalPortesIci; iterPortes++)
+            {
+                Porte cettePorte = listePortesIci.front();
+                listePortesIci.pop_front();
+
+                // Obtenir idPiece destination porte
+                std::map<std::string, int>::iterator iterIdPieces = idPieces.find(cettePorte.getDestination()->getNom());
+                int idPorte = iterIdPieces->second;
+                if (cettePorte.getCouleur() == joueur)
+                {
+                    adjListe[iterPieces].push_back(make_pair(idPorte, 1));
+                }
+
+            }
+
+            if (noeudCourant == noeudArrivee)
+            {
+                indexArrivee = iterPieces;
+            }
+            
+            noeudCourant = noeudCourant->suivant;
+        }
+
+        // Calcul du plus court chemin entre depart et chacune des autres pieces
+        std::vector<int> distMin= calcCheminPlusCourt(adjListe, nbPieces);
+
+        return indexArrivee == -1 ? -1 : distMin[indexArrivee];
     }
 
 
@@ -367,11 +399,41 @@ namespace TP1
     Couleur Labyrinthe::trouveGagnant()
     {
         //std::cout << "Rendu dans trouveGagnent() " << endl;
+
+        Couleur gagnant = Couleur::Aucun;
         int rouge = solutionner(Couleur::Rouge);
         int vert = solutionner(Couleur::Vert);
         int bleu = solutionner(Couleur::Bleu);
         int jaune = solutionner(Couleur::Jaune);
+        
+        int distParJoueur[4];
+        distParJoueur[0] = rouge;
+        distParJoueur[1] = vert;
+        distParJoueur[2] = bleu;
+        distParJoueur[3] = jaune;
 
+        int* minimum = std::min_element(begin(distParJoueur), end(distParJoueur));
+
+        if (*minimum == rouge)
+        {
+            gagnant = Couleur::Rouge;
+        }
+        else if (*minimum == vert)
+        {
+            gagnant = Couleur::Vert;
+        }
+        else if (*minimum == bleu)
+        {
+            gagnant = Couleur::Bleu;
+        }
+        else if (*minimum == jaune)
+        {
+            gagnant = Couleur::Jaune;
+        }
+
+        return gagnant;
+
+        /*
         if (rouge == -1 && vert == -1 && bleu == -1 && jaune == -1)
         {
             return Couleur::Aucun;
@@ -396,6 +458,8 @@ namespace TP1
         {
             return Couleur::Jaune;
         }
+
+        */
     }
 
 
