@@ -20,7 +20,7 @@ using namespace std;
 namespace TP1
 {
     // -------------------------------------------------------------------------------------------------
-    //	Méthodes fournies
+    //  Méthodes fournies
     // -------------------------------------------------------------------------------------------------
 
  /**
@@ -161,11 +161,11 @@ namespace TP1
     /**
      * \fn Labyrinthe::ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2)
      * \brief Fonction déjà fournie permettant d'ajouter une porte à une pièce
-     * \param[in]	Couleur couleur Couleur de la porte à ajouter
-     * \param[in]	int i1
-     * \param[in]	int j1
-     * \param[in]	int i2
-     * \param[in]	int j2
+     * \param[in]  Couleur couleur Couleur de la porte à ajouter
+     * \param[in]  int i1
+     * \param[in]  int j1
+     * \param[in]  int i2
+     * \param[in]  int j2
      */
     void Labyrinthe::ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2)
     {
@@ -197,8 +197,8 @@ namespace TP1
     /**
      * \fn Labyrinthe::ajoutePieceLabyrinthe(Piece & p)
      * \brief Fonction déjà fournie permettant d'ajouter une pièce au labyrinthe (si elle ne s'y trouve pas déjà)
-     * \param[in]	p La pièce à ajouter
-     * \post	La pièce appartient au labyrinthe;
+     * \param[in]  p La pièce à ajouter
+     * \post  La pièce appartient au labyrinthe;
      */
     void Labyrinthe::ajoutePieceLabyrinthe(const Piece& p)
     {
@@ -277,18 +277,18 @@ namespace TP1
 //!      1. Défiler une pièce
 //!      2. Enfiler toutes les pièces qui sont accessibles à partir de cette pièce à l'aide d'une porte
 //!         de la couleur du joueur, et qui n'ont pas été déjà parcourues, en leur associant la distance
-//! 		du départ de la pièce défilée plus un.
+//!     du départ de la pièce défilée plus un.
 //!
-//! 		Remarquez qu'il faut faire une vérification double ici. Il faut d'abord chercher les portes dans la liste
-//! 		de portes de la pièce défilée, puis il faut ensuite aussi chercher les portes dans les listes de portes de
-//! 		toutes les pièces pour voir s'il y en aurait qui mènent à la pièce défilée. Ceci est nécessaire car les portes
-//! 		ne sont pas à sens unique, mais la méthode qui charge un labyrinthe fournie ne les ajoute qu'une seule fois
-//!			dans le modèle d'implantation. Afin de savoir si une pièce a déjà été parcourue ou non, employez le champ
-//!			booléen parcourue. N'enfilez que des pièces pour lesquelles ce champ a false comme valeur, puis au moment
-//!			où vous l'enfilez, appliquez-lui la valeur true. Aussi, n'oubliez pas, avant de commencer l'algorithme, de
-//!			mettre ce champ à false pour toutes les pièces du labyrinthe.
+//!     Remarquez qu'il faut faire une vérification double ici. Il faut d'abord chercher les portes dans la liste
+//!     de portes de la pièce défilée, puis il faut ensuite aussi chercher les portes dans les listes de portes de
+//!     toutes les pièces pour voir s'il y en aurait qui mènent à la pièce défilée. Ceci est nécessaire car les portes
+//!     ne sont pas à sens unique, mais la méthode qui charge un labyrinthe fournie ne les ajoute qu'une seule fois
+//!      dans le modèle d'implantation. Afin de savoir si une pièce a déjà été parcourue ou non, employez le champ
+//!      booléen parcourue. N'enfilez que des pièces pour lesquelles ce champ a false comme valeur, puis au moment
+//!      où vous l'enfilez, appliquez-lui la valeur true. Aussi, n'oubliez pas, avant de commencer l'algorithme, de
+//!      mettre ce champ à false pour toutes les pièces du labyrinthe.
 //!
-//!	Tant qu'il reste des pièces dans la file et que la pièce d'arrivée n'a pas encore été atteinte (défilée).
+//!  Tant qu'il reste des pièces dans la file et que la pièce d'arrivée n'a pas encore été atteinte (défilée).
 
 
     /**
@@ -358,9 +358,30 @@ namespace TP1
         while (!file.empty())
         {
             distanceCourante++;
-            noeudCourant = noeudCourant->suivant;
+            Piece pieceCourante = file.top();
+            file.pop();
             
+            list<Porte> portesIci = listeAdjacence.find(noeudCourant->piece).second();
+            list<Porte>::const_iterator iterPorte = portesIci.begin();
             
+            for (iterPorte; iterPortes!= portesIci.end(); ++iterPortes)
+            {
+                if (iterPorte->getCouleur == joueur)
+                {
+                    Piece* destinationPtr = iterPorte->getDestination();
+                    Piece destination = *destinationPtr;
+                    if (destinationPtr == arrivee)
+                    {
+                      return distanceCourante;
+                    }
+                    if (!destination.getParcourue())
+                    {
+                      destination.setParcourue(true);
+                      destination.setDistanceDuDebut(distanceCourante);
+                      file.push(destination);
+                    }
+                }
+            } 
         }
 
         return -1;
@@ -370,7 +391,7 @@ namespace TP1
 
     /**
      * \brief Trouve le joueur qui peut solutionner le labyrinthe en le moins de déplacements. Si égalité,
-     *	priorité au joueur rouge, vert, bleu, puis au jaune
+     *  priorité au joueur rouge, vert, bleu, puis au jaune
      * \return Couleur du gagnant
      */
     Couleur Labyrinthe::trouveGagnant()
