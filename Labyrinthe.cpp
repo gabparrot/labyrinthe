@@ -340,7 +340,7 @@ namespace TP1
                 Piece destination = *destinationPtr;
                 listeAdjacence[destination]= portesIci;
             }
-
+            // TODO ENELEVER TOUTES LES PORTES PAS BONNE COULEUR // 
         } while (noeudCourant != noeudDepart);
 
 
@@ -358,9 +358,22 @@ namespace TP1
         while (!file.empty())
         {
             distanceCourante++;
-            noeudCourant = noeudCourant->suivant;
-            
-            
+            // TODO ITÉRER ICI À PARTIR DES DESTIONATIONS POSSIBLE DE LISTE ADJACANCE, **PAS** AVEC noeud->suivant car SUIVRE ORDRE LABYRINTHE
+
+            Piece pieceCourante = noeudCourant->piece;
+            pieceCourante.setDistanceDuDebut(distanceCourante);
+            pieceCourante.setParcourue(true);
+            file.push(pieceCourante);
+            // TODO CRÉER ITER PORTE POUR PARCOURIR LES DESTINATIONS À PARTIR DE LISTE D'ADJACENCE
+            // TODO ENSUITE POUR CHAQUE DESTINATION, SI PAS VISITÉ, MARQUER DISTANCE/VISITÉ ET PUSH DANS QUEUE
+            // TODO COMPRENDRE POURQUOI LA QUEUE SERAIT VIDE ET C'EST QUOI QU'ON POP?
+            //
+            for ()
+
+            if (noeudCourant->piece.getNom() == arrivee->getNom())
+            {
+                return distanceCourante;
+            }
         }
 
         return -1;
