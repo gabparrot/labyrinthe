@@ -265,6 +265,31 @@ namespace TP1
 
 
 
+    //! Cette méthode doit solutionner un labyrinthe pour le joueur spécifié par joueur.
+//! Elle doit donc trouver en combien d'étapes au minimum le joueur spécifié peut solutionner
+//! le labyrinthe, en ne passant bien sûr que par les portes qui correspondent à sa couleur.
+//!
+//! Si un labyrinthe ne peut pas être solutionné par le joueur, il faut retourner -1. Dans ce cas,
+//! nous ne considèrerons pas cela comme un appel anormal de la fonction.
+//! Vous devez utiliser l'algorithme suivant pour solutionner le labyrinthe, en utilisant une file "queue" de la STL:
+//! 1. Enfiler la pièce de départ en lui associant une distance du départ de zéro.
+//! 2. Faire
+//!      1. Défiler une pièce
+//!      2. Enfiler toutes les pièces qui sont accessibles à partir de cette pièce à l'aide d'une porte
+//!         de la couleur du joueur, et qui n'ont pas été déjà parcourues, en leur associant la distance
+//! 		du départ de la pièce défilée plus un.
+//!
+//! 		Remarquez qu'il faut faire une vérification double ici. Il faut d'abord chercher les portes dans la liste
+//! 		de portes de la pièce défilée, puis il faut ensuite aussi chercher les portes dans les listes de portes de
+//! 		toutes les pièces pour voir s'il y en aurait qui mènent à la pièce défilée. Ceci est nécessaire car les portes
+//! 		ne sont pas à sens unique, mais la méthode qui charge un labyrinthe fournie ne les ajoute qu'une seule fois
+//!			dans le modèle d'implantation. Afin de savoir si une pièce a déjà été parcourue ou non, employez le champ
+//!			booléen parcourue. N'enfilez que des pièces pour lesquelles ce champ a false comme valeur, puis au moment
+//!			où vous l'enfilez, appliquez-lui la valeur true. Aussi, n'oubliez pas, avant de commencer l'algorithme, de
+//!			mettre ce champ à false pour toutes les pièces du labyrinthe.
+//!
+//!	Tant qu'il reste des pièces dans la file et que la pièce d'arrivée n'a pas encore été atteinte (défilée).
+
 
     /**
      * \brief Nombre d'étape minimum pour solutionner le labyrinthe pour le joueur en ne passant que par les portes qui correspondent à sa couleur
@@ -273,134 +298,74 @@ namespace TP1
      */
     int Labyrinthe::solutionner(Couleur joueur)
     {
-        
-        if (depart == arrivee || trouvePiece(depart->getNom())->suivant == nullptr)
-            return -1;
+       /* PLAN
+        * - Faire liste d'adjacence:
+        *   - Parcourir toutes les pieces. et créer un map <piece, <portes>.
+        *   - Parcourir à nouveau. Pour chaque pièce, ajouter portes présentes.
+        *       - Pour chacune de ces portes, aller dans la piece, voir si liste porte contient origine, s'ajouter sinon.
+        *
+        * - Resoudre:
+        *   - Garder un compteur de distance dans la boucle
+        *   - Faire une queue de pieces
+        *   - Push le départ, marquer visité = true et distance = 0
+        *   - Par la liste d'adjacence, aller dans une pièce adjacente pas déjà visitée.
+        *       - Marquer la distance = current + 1
+        *       - Répéter pour toutes les pièces touchant à l'origine
+        */
 
-        int indexArrivee = -1;
+        NoeudListePieces* noeudCourant = &NoeudListePieces(*trouvePiece(depart->getNom()));
+        NoeudListePieces* noeudDepart = noeudCourant;
 
-        // Initialisation de la liste d'adjacence
-        // Je pèse la distance entre chaque piece avec les autres, pas seulement origine avec les autres
-        // chaque index = une piece, contenant chacun vecteurs <"IndexPieceDestination", "nbMinChemin entre piece origine et desti> 
-        std::vector<std::vector<std::pair<int, int>>> adjListe; // Paire = < pièce destination , distance min avec origine (cet index)> 
-
-        NoeudListePieces* noeudDepart  = trouvePiece(getDepart()->getNom());
-        NoeudListePieces* noeudArrivee = trouvePiece(getArrivee()->getNom());
-        NoeudListePieces* noeudCourant = noeudDepart;
-
-        // Dictionnaire de numéros pour chaque nom de pièce
-        std::map<std::string, int> idPieces; // <"Nom", "ID #">
-
-        int nbPieces = 0;
-
-        // Comptage du nb de pièces avec compteur jusqu'à revenir au même noeud
-        do
+        // Création d'une liste d'adjacence, premier parcours crée toutes les pieces et leur liste de porte
+        map<Piece, list<Porte>> listeAdjacence;
+        do 
         {
-            // Ajouter une entrée vide <int, int> pour chaque pièce (contiendra <dest,dist> après)
-            vector<pair<int, int>> unePiece;
-            adjListe.push_back(unePiece);
-
-            // Donner un numero au lieu d'un nom
-            idPieces.insert({noeudCourant->piece.getNom(), nbPieces});
-
+            std::list<Porte> portesIci = noeudCourant->piece.getPortes();
+            listeAdjacence.insert({ noeudCourant->piece, portesIci });
             noeudCourant = noeudCourant->suivant;
-            nbPieces++;
         } while (noeudCourant != noeudDepart);
 
-        // Mettre listes de toutes couleurs portes chaque piece dans vecteur
-        // Boucle concentrique ici ne devrait pas causer O(n2) car chaque pièce aura tjr 1 seule liste portes
+        // Deuxième parcours de la liste d'adjacence ajoute les portes dans l'autre direction
         noeudCourant = noeudDepart;
-
-        for (int iterPieces = 0; iterPieces < nbPieces; iterPieces++)
+        do
         {
-            std::list<Porte> listePortesIci = noeudCourant->piece.getPortes();
-            int totalPortesIci = listePortesIci.size();
+            std::list<Porte> portesIci = noeudCourant->piece.getPortes();
+            std::list<Porte>::iterator iterPorte = portesIci.begin();
 
-            for (int iterPortes = 0; iterPortes < totalPortesIci; iterPortes++)
+            for (iterPorte; iterPorte != portesIci.end(); ++iterPorte)
             {
-                Porte cettePorte = listePortesIci.front();
-                listePortesIci.pop_front();
-
-                // Obtenir idPiece destination porte
-                std::map<std::string, int>::iterator iterIdPieces = idPieces.find(cettePorte.getDestination()->getNom());
-                int idPorte = iterIdPieces->second;
-
-                if (cettePorte.getCouleur() == joueur)
-                {
-                    adjListe[iterPieces].push_back(make_pair(idPorte, 1));
-                    //cout << "Piece: " << iterPieces << " Porte: " << idPorte << endl;
-                }
-
+                std::list<Porte> portesIci = iterPorte->getDestination()->getPortes();
+                portesIci.push_front(*iterPorte);
+                Piece* destinationPtr = iterPorte->getDestination();
+                Piece destination = *destinationPtr;
+                listeAdjacence[destination]= portesIci;
             }
 
-            if (noeudCourant == noeudArrivee)
-            {
-                indexArrivee = iterPieces;
-            }
-
-            //TODO TEST
-            /*
-            std::map<std::string, int>::iterator iterIdPieces = idPieces.find(noeudDepart->piece.getNom());
-            cout << "DEPART = :" << iterIdPieces->first << " et " << iterIdPieces->second << endl;
-            iterIdPieces = idPieces.find(noeudArrivee->piece.getNom());
-            cout << "ARRIVEE = :" << iterIdPieces->first << " et " << iterIdPieces->second << endl;
-            */
+        } while (noeudCourant != noeudDepart);
 
 
+        // Début du parcours en largeur
+
+        depart->setParcourue(true);
+        depart->setDistanceDuDebut(0);
+
+        queue<Piece> file;
+        file.push(noeudCourant->piece);
 
 
-            noeudCourant = noeudCourant->suivant;
-        }
-
-        // Calcul du plus court chemin entre depart et chacune des autres pieces
-        std::vector<int> distMin= calcCheminPlusCourt(adjListe, nbPieces);
-
-        return indexArrivee == -1 ? -1 : distMin[indexArrivee];
-    }
-
-
-    /**
-        * \fn Labyrinthe::calcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>>& adjListe, int& start)
-        * \brief Retourne le chemin le plus court étant donné une liste d'adjacence
-        * \param[in] adjListe La liste d'adjacence
-        * \param[in] debut Le point de départ
-        */
-    std::vector<int> Labyrinthe::calcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>> &adjListe, int taille)
-    {
-        std::vector<int> distance;
-        
-        // Donner une valeur de départ "infinie" à tous les chemins (et pas std::INFINITY car c'est un float)
-        for (int i = 0; i < taille; i++)
-        {
-            distance.push_back(INFINI); 
-        }
-
-        std::priority_queue <std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> file;
-        file.push(make_pair(0, 0)); // Paire("noeud de départ", "Distance avec départ")
-        distance[0] = 0;  // Distance connue de 0 départ->départ, infinie ailleurs en attendant calcul
-
+        unsigned int distanceCourante = 0;
+        noeudCourant = noeudDepart;
         while (!file.empty())
         {
-            int u = file.top().first;
-            file.pop();
-
-            // Parcourir les pieces adjacentes à 
-            for (unsigned long long i = 0; i < adjListe[u].size(); i++)
-            {
-                int v      = adjListe[u][i].first;
-                int poids  = adjListe[u][i].second;
-
-                if (distance[v] > distance[u] + poids)
-                {
-                    distance[v] = distance[u] + poids;
-                    file.push(make_pair(v, distance[v]));
-                }
-            }
+            distanceCourante++;
+            noeudCourant = noeudCourant->suivant;
+            
+            
         }
-        //std::cout << " EST LA DISTANCE[0] RETOURNÉE DANS CALCHEMIN" << distance[0] << endl;
-        return distance;
-    }
 
+        return -1;
+    }
+ 
 
 
     /**
