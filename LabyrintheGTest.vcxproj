@@ -63,7 +63,6 @@
     <Text Include="data\rouge2x3.txt" />
     <Text Include="data\vert10x10.txt" />
     <Text Include="data\vert2x3.txt" />
-    <Text Include="TODOs.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

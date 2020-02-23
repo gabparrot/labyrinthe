@@ -310,7 +310,6 @@ namespace TP1
         // Mettre listes de toutes couleurs portes chaque piece dans vecteur
         // Boucle concentrique ici ne devrait pas causer O(n2) car chaque pièce aura tjr 1 seule liste portes
         noeudCourant = noeudDepart;
-        std::vector<int> nbPortesParPiece;
 
         for (int iterPieces = 0; iterPieces < nbPieces; iterPieces++)
         {
@@ -325,9 +324,11 @@ namespace TP1
                 // Obtenir idPiece destination porte
                 std::map<std::string, int>::iterator iterIdPieces = idPieces.find(cettePorte.getDestination()->getNom());
                 int idPorte = iterIdPieces->second;
+
                 if (cettePorte.getCouleur() == joueur)
                 {
                     adjListe[iterPieces].push_back(make_pair(idPorte, 1));
+                    //cout << "Piece: " << iterPieces << " Porte: " << idPorte << endl;
                 }
 
             }
@@ -336,7 +337,18 @@ namespace TP1
             {
                 indexArrivee = iterPieces;
             }
-            
+
+            //TODO TEST
+            /*
+            std::map<std::string, int>::iterator iterIdPieces = idPieces.find(noeudDepart->piece.getNom());
+            cout << "DEPART = :" << iterIdPieces->first << " et " << iterIdPieces->second << endl;
+            iterIdPieces = idPieces.find(noeudArrivee->piece.getNom());
+            cout << "ARRIVEE = :" << iterIdPieces->first << " et " << iterIdPieces->second << endl;
+            */
+
+
+
+
             noeudCourant = noeudCourant->suivant;
         }
 
@@ -373,10 +385,10 @@ namespace TP1
             file.pop();
 
             // Parcourir les pieces adjacentes à 
-            for (int i = 0; i < adjListe[u].size(); i++)
+            for (unsigned long long i = 0; i < adjListe[u].size(); i++)
             {
-                int v         = adjListe[u][i].first;
-                int poids     = adjListe[u][i].second;
+                int v      = adjListe[u][i].first;
+                int poids  = adjListe[u][i].second;
 
                 if (distance[v] > distance[u] + poids)
                 {
@@ -433,33 +445,6 @@ namespace TP1
 
         return gagnant;
 
-        /*
-        if (rouge == -1 && vert == -1 && bleu == -1 && jaune == -1)
-        {
-            return Couleur::Aucun;
-        }
-
-        if (rouge >= vert && rouge > bleu&& rouge > jaune)
-        {
-            return Couleur::Rouge;
-        }
-
-        if (vert > rouge&& vert >= bleu && vert > jaune)
-        {
-            return Couleur::Vert;
-        }
-
-        if (bleu > rouge&& bleu > vert&& bleu >= jaune)
-        {
-            return Couleur::Bleu;
-        }
-
-        if (jaune > rouge&& jaune > vert&& jaune > bleu)
-        {
-            return Couleur::Jaune;
-        }
-
-        */
     }
 
 
