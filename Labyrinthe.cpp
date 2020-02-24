@@ -263,34 +263,6 @@ namespace TP1
         return *this;
     }
 
-
-
-    //! Cette méthode doit solutionner un labyrinthe pour le joueur spécifié par joueur.
-//! Elle doit donc trouver en combien d'étapes au minimum le joueur spécifié peut solutionner
-//! le labyrinthe, en ne passant bien sûr que par les portes qui correspondent à sa couleur.
-//!
-//! Si un labyrinthe ne peut pas être solutionné par le joueur, il faut retourner -1. Dans ce cas,
-//! nous ne considèrerons pas cela comme un appel anormal de la fonction.
-//! Vous devez utiliser l'algorithme suivant pour solutionner le labyrinthe, en utilisant une file "queue" de la STL:
-//! 1. Enfiler la pièce de départ en lui associant une distance du départ de zéro.
-//! 2. Faire
-//!      1. Défiler une pièce
-//!      2. Enfiler toutes les pièces qui sont accessibles à partir de cette pièce à l'aide d'une porte
-//!         de la couleur du joueur, et qui n'ont pas été déjà parcourues, en leur associant la distance
-//! 		du départ de la pièce défilée plus un.
-//!
-//! 		Remarquez qu'il faut faire une vérification double ici. Il faut d'abord chercher les portes dans la liste
-//! 		de portes de la pièce défilée, puis il faut ensuite aussi chercher les portes dans les listes de portes de
-//! 		toutes les pièces pour voir s'il y en aurait qui mènent à la pièce défilée. Ceci est nécessaire car les portes
-//! 		ne sont pas à sens unique, mais la méthode qui charge un labyrinthe fournie ne les ajoute qu'une seule fois
-//!			dans le modèle d'implantation. Afin de savoir si une pièce a déjà été parcourue ou non, employez le champ
-//!			booléen parcourue. N'enfilez que des pièces pour lesquelles ce champ a false comme valeur, puis au moment
-//!			où vous l'enfilez, appliquez-lui la valeur true. Aussi, n'oubliez pas, avant de commencer l'algorithme, de
-//!			mettre ce champ à false pour toutes les pièces du labyrinthe.
-//!
-//!	Tant qu'il reste des pièces dans la file et que la pièce d'arrivée n'a pas encore été atteinte (défilée).
-
-
     /**
      * \brief Nombre d'étape minimum pour solutionner le labyrinthe pour le joueur en ne passant que par les portes qui correspondent à sa couleur
      * \param[in] Couleur joueur
@@ -298,20 +270,7 @@ namespace TP1
      */
     int Labyrinthe::solutionner(Couleur joueur)
     {
-        /* PLAN
-         * - Faire liste d'adjacence:
-         *   - Parcourir toutes les pieces. et créer un map <piece, <portes>.
-         *   - Parcourir à nouveau. Pour chaque pièce, ajouter portes présentes.
-         *       - Pour chacune de ces portes, aller dans la piece, voir si liste porte contient origine, s'ajouter sinon.
-         *
-         * - Resoudre:
-         *   - Garder un compteur de distance dans la boucle
-         *   - Faire une queue de pieces
-         *   - Push le départ, marquer visité = true et distance = 0
-         *   - Par la liste d'adjacence, aller dans une pièce adjacente pas déjà visitée.
-         *       - Marquer la distance = current + 1
-         *       - Répéter pour toutes les pièces touchant à l'origine
-         */
+
 
         NoeudListePieces* noeudCourant = trouvePiece(getDepart()->getNom());
         NoeudListePieces* noeudDepart = noeudCourant;
@@ -360,10 +319,7 @@ namespace TP1
 
         // Deuxième parcours de la liste d'adjacence ajoute les portes dans l'autre direction (si affiché dans A, récrire dans B)
         noeudCourant = noeudDepart;
-        if (joueur == Couleur::Vert)
-        {
-            cout << "DEBUG" << endl;
-        }
+
         do
         {
             if (noeudCourant == nullptr)
@@ -487,6 +443,13 @@ namespace TP1
         distParJoueur[2] = bleu;
         distParJoueur[3] = jaune;
 
+        for (int i = 0; i < 4; i++)
+        {
+            if (distParJoueur[i] < 0)
+            {
+                distParJoueur[i] = INFINI;
+            }
+        }
         int* minimum = std::min_element(begin(distParJoueur), end(distParJoueur));
 
         if (*minimum == rouge)
