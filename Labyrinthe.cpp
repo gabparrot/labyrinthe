@@ -255,7 +255,7 @@ namespace TP1
      */
     const Labyrinthe& Labyrinthe::operator=(const Labyrinthe& source)
     {
-        depart  = source.getDepart();
+        depart = source.getDepart();
         arrivee = source.getArrivee();
         dernier = source.trouvePiece(source.getArrivee()->getNom());
         //TODO copier source.NoeudListePieces par iteration?
@@ -298,87 +298,109 @@ namespace TP1
      */
     int Labyrinthe::solutionner(Couleur joueur)
     {
-       /* PLAN
-        * - Faire liste d'adjacence:
-        *   - Parcourir toutes les pieces. et créer un map <piece, <portes>.
-        *   - Parcourir à nouveau. Pour chaque pièce, ajouter portes présentes.
-        *       - Pour chacune de ces portes, aller dans la piece, voir si liste porte contient origine, s'ajouter sinon.
-        *
-        * - Resoudre:
-        *   - Garder un compteur de distance dans la boucle
-        *   - Faire une queue de pieces
-        *   - Push le départ, marquer visité = true et distance = 0
-        *   - Par la liste d'adjacence, aller dans une pièce adjacente pas déjà visitée.
-        *       - Marquer la distance = current + 1
-        *       - Répéter pour toutes les pièces touchant à l'origine
-        */
+        /* PLAN
+         * - Faire liste d'adjacence:
+         *   - Parcourir toutes les pieces. et créer un map <piece, <portes>.
+         *   - Parcourir à nouveau. Pour chaque pièce, ajouter portes présentes.
+         *       - Pour chacune de ces portes, aller dans la piece, voir si liste porte contient origine, s'ajouter sinon.
+         *
+         * - Resoudre:
+         *   - Garder un compteur de distance dans la boucle
+         *   - Faire une queue de pieces
+         *   - Push le départ, marquer visité = true et distance = 0
+         *   - Par la liste d'adjacence, aller dans une pièce adjacente pas déjà visitée.
+         *       - Marquer la distance = current + 1
+         *       - Répéter pour toutes les pièces touchant à l'origine
+         */
 
-        NoeudListePieces* noeudCourant = &NoeudListePieces(*trouvePiece(depart->getNom()));
-        NoeudListePieces* noeudDepart = noeudCourant;
+         NoeudListePieces* noeudCourant = &NoeudListePieces(*trouvePiece(depart->getNom()));
+         NoeudListePieces* noeudDepart = noeudCourant;
 
-        // Création d'une liste d'adjacence, premier parcours crée toutes les pieces et leur liste de porte
-        map<Piece, list<Porte>> listeAdjacence;
-        do 
-        {
-            std::list<Porte> portesIci = noeudCourant->piece.getPortes();
-            listeAdjacence.insert({ noeudCourant->piece, portesIci });
-            noeudCourant = noeudCourant->suivant;
-        } while (noeudCourant != noeudDepart);
+         // Création d'une liste d'adjacence, premier parcours crée toutes les pieces et leur liste de portes
+         std::map<Piece, std::vector<Porte>> listeAdjacence;
+         do 
+         {
+             std::list<Porte> portesIci = noeudCourant->piece.getPortes();
+             std::list<Porte>::iterator iterPorte;;
+             std::vector<Porte> vPortes;
 
-        // Deuxième parcours de la liste d'adjacence ajoute les portes dans l'autre direction
-        noeudCourant = noeudDepart;
-        do
-        {
-            std::list<Porte> portesIci = noeudCourant->piece.getPortes();
-            std::list<Porte>::iterator iterPorte = portesIci.begin();
+             // Enlever portes mauvaise couleur avant de push la liste
+             for (iterPorte = portesIci.begin(); iterPorte != portesIci.end(); ++iterPorte)
+             {
+                 if (iterPorte->getCouleur() == joueur)
+                 {
+                     Porte cettePorte = *iterPorte;
+                     vPortes.push_back(cettePorte);
+                 }
+             }
 
-            for (iterPorte; iterPorte != portesIci.end(); ++iterPorte)
-            {
-                std::list<Porte> portesIci = iterPorte->getDestination()->getPortes();
-                portesIci.push_front(*iterPorte);
-                Piece* destinationPtr = iterPorte->getDestination();
-                Piece destination = *destinationPtr;
-                listeAdjacence[destination]= portesIci;
-            }
-            // TODO ENELEVER TOUTES LES PORTES PAS BONNE COULEUR // 
-        } while (noeudCourant != noeudDepart);
+             // Associer liste de porte à une pièce dans le dictionnaire
+            listeAdjacence.insert({ noeudCourant->piece, vPortes });
+             noeudCourant = noeudCourant->suivant;
+         } while (noeudCourant != noeudDepart);
+
+         // Deuxième parcours de la liste d'adjacence ajoute les portes dans l'autre direction (si affiché dans A, récrire dans B)
+/*         noeudCourant = noeudDepart;
+
+         do
+         {
+             std::list<Porte> portesIci = noeudCourant->piece.getPortes();
+             std::list<Porte>::iterator iterPorte;
+             std::vector<Porte> vPortes;
+
+             for (iterPorte = portesIci.begin(); iterPorte != portesIci.end(); ++iterPorte)
+             {
+                     Porte cettePorte = *iterPorte;
+                     Piece* destinationPtr = cettePorte.getDestination();
+                     Piece destination = *destinationPtr;
+                     listeAdjacence[destination].push_back(cettePorte);
+             }
+         } whi*/le (noeudCourant != noeudDepart);
 
 
-        // Début du parcours en largeur
-
-        depart->setParcourue(true);
-        depart->setDistanceDuDebut(0);
-
-        queue<Piece> file;
-        file.push(noeudCourant->piece);
+         // Début du parcours en largeur
 
 
-        unsigned int distanceCourante = 0;
-        noeudCourant = noeudDepart;
-        while (!file.empty())
-        {
-            distanceCourante++;
-            // TODO ITÉRER ICI À PARTIR DES DESTIONATIONS POSSIBLE DE LISTE ADJACANCE, **PAS** AVEC noeud->suivant car SUIVRE ORDRE LABYRINTHE
+         // Initialiser avec pièce départ visitée et distance avec elle-même de 0
+         depart->setParcourue(true);
+         depart->setDistanceDuDebut(0);
 
-            Piece pieceCourante = noeudCourant->piece;
-            pieceCourante.setDistanceDuDebut(distanceCourante);
-            pieceCourante.setParcourue(true);
-            file.push(pieceCourante);
-            // TODO CRÉER ITER PORTE POUR PARCOURIR LES DESTINATIONS À PARTIR DE LISTE D'ADJACENCE
-            // TODO ENSUITE POUR CHAQUE DESTINATION, SI PAS VISITÉ, MARQUER DISTANCE/VISITÉ ET PUSH DANS QUEUE
-            // TODO COMPRENDRE POURQUOI LA QUEUE SERAIT VIDE ET C'EST QUOI QU'ON POP?
-            //
-            for ()
+         // Créer une file réprésentant toutes les pièces qu'on peut atteindre à partir de la pièce courante
+         queue<Piece> file;
+         file.push(noeudCourant->piece);
 
-            if (noeudCourant->piece.getNom() == arrivee->getNom())
-            {
-                return distanceCourante;
-            }
-        }
+         // Compteur de distance, augmente de 1 chaque fois qu'on avance
+         int distanceCourante = 0;
+         noeudCourant = noeudDepart;
 
+         while (!file.empty())
+         {
+             distanceCourante++;
+             Piece pieceCourante = file.front();
+             file.pop();
+
+             vector<Porte> vPortesIci = listeAdjacence[noeudCourant->piece];
+             vector<Porte>::iterator vIterPorte = vPortesIci.begin();
+
+             for (vIterPorte; vIterPorte != vPortesIci.end(); ++vIterPorte)
+             {
+                 Piece* destinationPtr = vIterPorte->getDestination();
+                 Piece destination = *destinationPtr;
+                 if (destinationPtr == arrivee)
+                 {
+                     return distanceCourante;
+                 }
+                 if (!destination.getParcourue())
+                 {
+                     destination.setParcourue(true);
+                     destination.setDistanceDuDebut(distanceCourante);
+                     file.push(destination);
+                 }
+             }
+         }
         return -1;
     }
- 
+
 
 
     /**
@@ -395,7 +417,7 @@ namespace TP1
         int vert = solutionner(Couleur::Vert);
         int bleu = solutionner(Couleur::Bleu);
         int jaune = solutionner(Couleur::Jaune);
-        
+
         int distParJoueur[4];
         distParJoueur[0] = rouge;
         distParJoueur[1] = vert;
@@ -448,7 +470,7 @@ namespace TP1
         }
         return false;
     }
-    
+
 
     /**
      * \brief Ajuste le pointeur depart au Labyrinthe
