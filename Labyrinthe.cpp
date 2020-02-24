@@ -313,91 +313,156 @@ namespace TP1
          *       - Répéter pour toutes les pièces touchant à l'origine
          */
 
-         NoeudListePieces* noeudCourant = &NoeudListePieces(*trouvePiece(depart->getNom()));
-         NoeudListePieces* noeudDepart = noeudCourant;
+        NoeudListePieces* noeudCourant = trouvePiece(getDepart()->getNom());
+        NoeudListePieces* noeudDepart = noeudCourant;
 
-         // Création d'une liste d'adjacence, premier parcours crée toutes les pieces et leur liste de portes
-         std::map<Piece, std::vector<Porte>> listeAdjacence;
-         do 
-         {
-             std::list<Porte> portesIci = noeudCourant->piece.getPortes();
-             std::list<Porte>::iterator iterPorte;;
-             std::vector<Porte> vPortes;
+        // Création d'une liste d'adjacence, premier parcours crée toutes les pieces et leur liste de portes
+        std::map<std::string, std::vector<Porte>> listeAdjacence;
+        do
+        {
+            
+            // Enlever portes mauvaise couleur avant de push la liste
+            if (noeudCourant == nullptr)
+            {
+                break;
+            }
+            if (noeudCourant->piece.getNom() != "")
+            {
+                Piece pieceCourante = noeudCourant->piece;
+                Piece* pieceCourantePtr = &pieceCourante;
+                std::list<Porte> portesIci = pieceCourante.getPortes();
+                std::list<Porte>::iterator iterPorte;
+                std::vector<Porte> vPortes;
+                if (!portesIci.empty())
+                {
+                    for (iterPorte = portesIci.begin(); iterPorte != portesIci.end(); ++iterPorte)
+                    {
+                        if (iterPorte->getCouleur() == joueur)
+                        {
+                            Porte cettePorte = *iterPorte;
+                            vPortes.push_back(cettePorte);
+                        }
+                    }
+                }
+                // Associer liste de porte à une pièce dans le dictionnaire
+                string nomIci = pieceCourante.getNom();
+                pieceCourante.setParcourue(false);
+                pieceCourante.setDistanceDuDebut(INFINI);
 
-             // Enlever portes mauvaise couleur avant de push la liste
-             for (iterPorte = portesIci.begin(); iterPorte != portesIci.end(); ++iterPorte)
-             {
-                 if (iterPorte->getCouleur() == joueur)
-                 {
-                     Porte cettePorte = *iterPorte;
-                     vPortes.push_back(cettePorte);
-                 }
-             }
+                if (pieceCourantePtr != nullptr && !vPortes.empty())
+                {
+                    listeAdjacence.insert({ nomIci , vPortes });
+                }
+            }
 
-             // Associer liste de porte à une pièce dans le dictionnaire
-            listeAdjacence.insert({ noeudCourant->piece, vPortes });
-             noeudCourant = noeudCourant->suivant;
-         } while (noeudCourant != noeudDepart);
+            noeudCourant = noeudCourant->suivant;
+        } while (noeudCourant != noeudDepart && noeudCourant != nullptr);
 
-         // Deuxième parcours de la liste d'adjacence ajoute les portes dans l'autre direction (si affiché dans A, récrire dans B)
-/*         noeudCourant = noeudDepart;
+        // Deuxième parcours de la liste d'adjacence ajoute les portes dans l'autre direction (si affiché dans A, récrire dans B)
+        noeudCourant = noeudDepart;
 
-         do
-         {
-             std::list<Porte> portesIci = noeudCourant->piece.getPortes();
-             std::list<Porte>::iterator iterPorte;
-             std::vector<Porte> vPortes;
+        do
+        {
+            if (noeudCourant == nullptr)
+            {
+                break;
+            }
+            if (noeudCourant->piece.getNom() != "")
+            {
+                std::list<Porte> portesIci = noeudCourant->piece.getPortes();
+                std::list<Porte>::iterator iterPorte;
+                std::vector<Porte> vPortes;
 
-             for (iterPorte = portesIci.begin(); iterPorte != portesIci.end(); ++iterPorte)
-             {
-                     Porte cettePorte = *iterPorte;
-                     Piece* destinationPtr = cettePorte.getDestination();
-                     Piece destination = *destinationPtr;
-                     listeAdjacence[destination].push_back(cettePorte);
-             }
-         } whi*/le (noeudCourant != noeudDepart);
+                if (!portesIci.empty())
+                {
+                    for (iterPorte = portesIci.begin(); iterPorte != portesIci.end(); ++iterPorte)
+                    {
+                        Porte cettePorte = *iterPorte;
+                        if (cettePorte.getCouleur() == joueur)
+                        {
+                            Piece* destinationPtr = cettePorte.getDestination();
+                            Piece destination = *destinationPtr;
+                            string nomDestination = destination.getNom();
+                            vector<Porte>& portesLaBas = listeAdjacence[nomDestination];
+                            portesLaBas.push_back(cettePorte);
+                        }
+                    }
+                }
+            }
+            noeudCourant = noeudCourant->suivant;
+
+        } while (noeudCourant != noeudDepart && noeudCourant != nullptr);
 
 
-         // Début du parcours en largeur
+        // Début du parcours en largeur
 
 
-         // Initialiser avec pièce départ visitée et distance avec elle-même de 0
-         depart->setParcourue(true);
-         depart->setDistanceDuDebut(0);
+        // Initialiser avec pièce départ visitée et distance avec elle-même de 0
+        depart->setDistanceDuDebut(0);
 
-         // Créer une file réprésentant toutes les pièces qu'on peut atteindre à partir de la pièce courante
-         queue<Piece> file;
-         file.push(noeudCourant->piece);
 
-         // Compteur de distance, augmente de 1 chaque fois qu'on avance
-         int distanceCourante = 0;
-         noeudCourant = noeudDepart;
+        // Créer une file réprésentant toutes les pièces qu'on peut atteindre à partir de la pièce courante
 
-         while (!file.empty())
-         {
-             distanceCourante++;
-             Piece pieceCourante = file.front();
-             file.pop();
+        // Compteur de distance, augmente de 1 chaque fois qu'on avance
+        noeudCourant = noeudDepart;
 
-             vector<Porte> vPortesIci = listeAdjacence[noeudCourant->piece];
-             vector<Porte>::iterator vIterPorte = vPortesIci.begin();
+        do
+        {
+            noeudCourant->piece.setDistanceDuDebut(0);
+            noeudCourant->piece.setParcourue(false);
+            noeudCourant = noeudCourant->suivant;
 
-             for (vIterPorte; vIterPorte != vPortesIci.end(); ++vIterPorte)
-             {
-                 Piece* destinationPtr = vIterPorte->getDestination();
-                 Piece destination = *destinationPtr;
-                 if (destinationPtr == arrivee)
-                 {
-                     return distanceCourante;
-                 }
-                 if (!destination.getParcourue())
-                 {
-                     destination.setParcourue(true);
-                     destination.setDistanceDuDebut(distanceCourante);
-                     file.push(destination);
-                 }
-             }
-         }
+        } while (noeudCourant != noeudDepart && noeudCourant != nullptr);
+        noeudCourant = noeudDepart;
+        queue<Piece*> file;
+        noeudDepart->piece.setParcourue(true);
+        noeudDepart->piece.setDistanceDuDebut(0);
+        file.push(&noeudDepart->piece);
+        string nomArrivee = arrivee->getNom();
+        int compteurDistance = 0;
+
+            while (!file.empty())
+            {
+                Piece* pieceCourantePtr = file.front();
+                Piece pieceCourante = *pieceCourantePtr;
+                file.pop();
+                string nomIci = pieceCourantePtr->getNom();
+                vector<Porte> vPortesIci = listeAdjacence[nomIci];
+
+                if (pieceCourantePtr == arrivee)
+                {
+                    return (compteurDistance + 1);
+                }
+
+                if (!vPortesIci.empty())
+                {
+                    vector<Porte>::iterator vIterPorte;
+
+                    for (vIterPorte = vPortesIci.begin(); vIterPorte != vPortesIci.end(); ++vIterPorte)
+                    {
+                        Piece* destinationPtr = vIterPorte->getDestination();
+                        Piece destination = *destinationPtr;
+                        Piece* vraieDest = &(trouvePiece(destination.getNom())->piece);
+
+                        if (!(destination.getParcourue()))
+                        {
+                            vraieDest->setDistanceDuDebut(pieceCourantePtr->getDistanceDuDebut() + 1);
+                            vraieDest->setParcourue(true);
+                            file.push(vraieDest);
+                            //cout << "Ajout de : " << vraieDest->getNom() << " À l'adresse: " << vraieDest << endl;
+                            if (destination.getDistanceDuDebut() > compteurDistance)
+                            {
+                                compteurDistance = destination.getDistanceDuDebut();
+                            }
+                        }
+                        if (destinationPtr->getNom() == nomArrivee)
+                        {
+                            return pieceCourantePtr->getDistanceDuDebut() + 1;
+                        }
+                    }
+                }
+            }
+            listeAdjacence.clear();
         return -1;
     }
 
