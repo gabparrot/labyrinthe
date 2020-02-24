@@ -24,6 +24,8 @@ namespace TP1
     Piece::Piece(const std::string& nom) : 
         nom(nom) 
     {
+        parcourue = false;
+        distanceDuDebut = 0;
     }
 
      /**

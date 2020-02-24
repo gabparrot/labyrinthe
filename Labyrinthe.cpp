@@ -255,16 +255,13 @@ namespace TP1
      */
     const Labyrinthe& Labyrinthe::operator=(const Labyrinthe& source)
     {
-        depart  = source.getDepart();
+        depart = source.getDepart();
         arrivee = source.getArrivee();
         dernier = source.trouvePiece(source.getArrivee()->getNom());
         //TODO copier source.NoeudListePieces par iteration?
 
         return *this;
     }
-
-
-
 
     /**
      * \brief Nombre d'étape minimum pour solutionner le labyrinthe pour le joueur en ne passant que par les portes qui correspondent à sa couleur
@@ -273,120 +270,154 @@ namespace TP1
      */
     int Labyrinthe::solutionner(Couleur joueur)
     {
-        
-        if (depart == arrivee || trouvePiece(depart->getNom())->suivant == nullptr)
-            return -1;
 
-        int indexArrivee = -1;
 
-        // Initialisation de la liste d'adjacence
-        // Je pèse la distance entre chaque piece avec les autres, pas seulement origine avec les autres
-        // chaque index = une piece, contenant chacun vecteurs <"IndexPieceDestination", "nbMinChemin entre piece origine et desti> 
-        std::vector<std::vector<std::pair<int, int>>> adjListe; // Paire = < pièce destination , distance min avec origine (cet index)> 
+        NoeudListePieces* noeudCourant = trouvePiece(getDepart()->getNom());
+        NoeudListePieces* noeudDepart = noeudCourant;
 
-        NoeudListePieces* noeudDepart  = trouvePiece(getDepart()->getNom());
-        NoeudListePieces* noeudArrivee = trouvePiece(getArrivee()->getNom());
-        NoeudListePieces* noeudCourant = noeudDepart;
-
-        // Dictionnaire de numéros pour chaque nom de pièce
-        std::map<std::string, int> idPieces; // <"Nom", "ID #">
-
-        int nbPieces = 0;
-
-        // Comptage du nb de pièces avec compteur jusqu'à revenir au même noeud
+        // Création d'une liste d'adjacence, premier parcours crée toutes les pieces et leur liste de portes
+        std::map<std::string, std::vector<Porte>> listeAdjacence;
         do
         {
-            // Ajouter une entrée vide <int, int> pour chaque pièce (contiendra <dest,dist> après)
-            vector<pair<int, int>> unePiece;
-            adjListe.push_back(unePiece);
-
-            // Donner un numero au lieu d'un nom
-            idPieces.insert({noeudCourant->piece.getNom(), nbPieces});
-
-            noeudCourant = noeudCourant->suivant;
-            nbPieces++;
-        } while (noeudCourant != noeudDepart);
-
-        // Mettre listes de toutes couleurs portes chaque piece dans vecteur
-        // Boucle concentrique ici ne devrait pas causer O(n2) car chaque pièce aura tjr 1 seule liste portes
-        noeudCourant = noeudDepart;
-        std::vector<int> nbPortesParPiece;
-
-        for (int iterPieces = 0; iterPieces < nbPieces; iterPieces++)
-        {
-            std::list<Porte> listePortesIci = noeudCourant->piece.getPortes();
-            int totalPortesIci = listePortesIci.size();
-
-            for (int iterPortes = 0; iterPortes < totalPortesIci; iterPortes++)
-            {
-                Porte cettePorte = listePortesIci.front();
-                listePortesIci.pop_front();
-
-                // Obtenir idPiece destination porte
-                std::map<std::string, int>::iterator iterIdPieces = idPieces.find(cettePorte.getDestination()->getNom());
-                int idPorte = iterIdPieces->second;
-                if (cettePorte.getCouleur() == joueur)
-                {
-                    adjListe[iterPieces].push_back(make_pair(idPorte, 1));
-                }
-
-            }
-
-            if (noeudCourant == noeudArrivee)
-            {
-                indexArrivee = iterPieces;
-            }
             
-            noeudCourant = noeudCourant->suivant;
-        }
-
-        // Calcul du plus court chemin entre depart et chacune des autres pieces
-        std::vector<int> distMin= calcCheminPlusCourt(adjListe, nbPieces);
-
-        return indexArrivee == -1 ? -1 : distMin[indexArrivee];
-    }
-
-
-    /**
-        * \fn Labyrinthe::calcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>>& adjListe, int& start)
-        * \brief Retourne le chemin le plus court étant donné une liste d'adjacence
-        * \param[in] adjListe La liste d'adjacence
-        * \param[in] debut Le point de départ
-        */
-    std::vector<int> Labyrinthe::calcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>> &adjListe, int taille)
-    {
-        std::vector<int> distance;
-        
-        // Donner une valeur de départ "infinie" à tous les chemins (et pas std::INFINITY car c'est un float)
-        for (int i = 0; i < taille; i++)
-        {
-            distance.push_back(INFINI); 
-        }
-
-        std::priority_queue <std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> file;
-        file.push(make_pair(0, 0)); // Paire("noeud de départ", "Distance avec départ")
-        distance[0] = 0;  // Distance connue de 0 départ->départ, infinie ailleurs en attendant calcul
-
-        while (!file.empty())
-        {
-            int u = file.top().first;
-            file.pop();
-
-            // Parcourir les pieces adjacentes à 
-            for (int i = 0; i < adjListe[u].size(); i++)
+            // Enlever portes mauvaise couleur avant de push la liste
+            if (noeudCourant == nullptr)
             {
-                int v         = adjListe[u][i].first;
-                int poids     = adjListe[u][i].second;
-
-                if (distance[v] > distance[u] + poids)
+                break;
+            }
+            if (noeudCourant->piece.getNom() != "")
+            {
+                Piece pieceCourante = noeudCourant->piece;
+                Piece* pieceCourantePtr = &pieceCourante;
+                std::list<Porte> portesIci = pieceCourante.getPortes();
+                std::list<Porte>::iterator iterPorte;
+                std::vector<Porte> vPortes;
+                if (!portesIci.empty())
                 {
-                    distance[v] = distance[u] + poids;
-                    file.push(make_pair(v, distance[v]));
+                    for (iterPorte = portesIci.begin(); iterPorte != portesIci.end(); ++iterPorte)
+                    {
+                        if (iterPorte->getCouleur() == joueur)
+                        {
+                            Porte cettePorte = *iterPorte;
+                            vPortes.push_back(cettePorte);
+                        }
+                    }
+                }
+                // Associer liste de porte à une pièce dans le dictionnaire
+                string nomIci = pieceCourante.getNom();
+                pieceCourante.setParcourue(false);
+                pieceCourante.setDistanceDuDebut(INFINI);
+
+                if (pieceCourantePtr != nullptr)
+                {
+                    listeAdjacence.insert({ nomIci , vPortes });
                 }
             }
-        }
-        //std::cout << " EST LA DISTANCE[0] RETOURNÉE DANS CALCHEMIN" << distance[0] << endl;
-        return distance;
+
+            noeudCourant = noeudCourant->suivant;
+        } while (noeudCourant != noeudDepart && noeudCourant != nullptr);
+
+        // Deuxième parcours de la liste d'adjacence ajoute les portes dans l'autre direction (si affiché dans A, récrire dans B)
+        noeudCourant = noeudDepart;
+
+        do
+        {
+            if (noeudCourant == nullptr)
+            {
+                break;
+            }
+            if (noeudCourant->piece.getNom() != "")
+            {
+                std::list<Porte> portesIci = noeudCourant->piece.getPortes();
+                std::list<Porte>::iterator iterPorte;
+
+                if (!portesIci.empty())
+                {
+                    for (iterPorte = portesIci.begin(); iterPorte != portesIci.end(); ++iterPorte)
+                    {
+                        Porte cettePorte = *iterPorte;
+                        if (cettePorte.getCouleur() == joueur)
+                        {
+                            Piece* destinationPtr = cettePorte.getDestination();
+                            Piece destination = *destinationPtr;
+                            string nomDestination = destination.getNom();
+                            vector<Porte>& portesLaBas = listeAdjacence[nomDestination];
+                            Porte porteInverse = Porte(joueur, &noeudCourant->piece);
+                            portesLaBas.push_back(porteInverse);
+                        }
+                    }
+                }
+            }
+            noeudCourant = noeudCourant->suivant;
+
+        } while (noeudCourant != noeudDepart && noeudCourant != nullptr);
+
+
+        // Créer une file réprésentant toutes les pièces qu'on peut atteindre à partir de la pièce courante
+        depart->setDistanceDuDebut(0);
+        noeudCourant = noeudDepart;
+
+        // Remettre toutes les pièces à 0/false
+        do
+        {
+            noeudCourant->piece.setDistanceDuDebut(0);
+            noeudCourant->piece.setParcourue(false);
+            noeudCourant = noeudCourant->suivant;
+
+        } while (noeudCourant != noeudDepart && noeudCourant != nullptr);
+        
+        // Début du parcours en largeur
+        noeudCourant = noeudDepart;
+        queue<Piece*> file;
+        noeudDepart->piece.setParcourue(true);
+        noeudDepart->piece.setDistanceDuDebut(0);
+        file.push(&(noeudDepart->piece));
+        string nomArrivee = arrivee->getNom();
+        int compteurDistance = 0;
+
+            while (!file.empty())
+            {
+                Piece* pieceCourantePtr = file.front();
+                Piece pieceCourante = *pieceCourantePtr;
+                file.pop();
+                string nomIci = pieceCourantePtr->getNom();
+                vector<Porte> vPortesIci = listeAdjacence[nomIci];
+
+                if (pieceCourantePtr == arrivee)
+                {
+                    return (compteurDistance + 1);
+                }
+
+                if (!vPortesIci.empty())
+                {
+                    vector<Porte>::iterator vIterPorte;
+
+                    for (vIterPorte = vPortesIci.begin(); vIterPorte != vPortesIci.end(); ++vIterPorte)
+                    {
+                        Piece* destinationPtr = vIterPorte->getDestination();
+                        Piece destination = *destinationPtr;
+                        Piece* vraieDest = &(trouvePiece(destination.getNom())->piece);
+
+                        if (!(destination.getParcourue()))
+                        {
+                            vraieDest->setDistanceDuDebut(pieceCourantePtr->getDistanceDuDebut() + 1);
+                            vraieDest->setParcourue(true);
+                            file.push(vraieDest);
+                            //cout << "Ajout de : " << vraieDest->getNom() << " À l'adresse: " << vraieDest << endl;
+                            if (destination.getDistanceDuDebut() > compteurDistance)
+                            {
+                                compteurDistance = destination.getDistanceDuDebut();
+                            }
+                        }
+                        if (destinationPtr->getNom() == nomArrivee)
+                        {
+                            return pieceCourantePtr->getDistanceDuDebut() + 1;
+                        }
+                    }
+                }
+            }
+            listeAdjacence.clear();
+        return -1;
     }
 
 
@@ -405,13 +436,20 @@ namespace TP1
         int vert = solutionner(Couleur::Vert);
         int bleu = solutionner(Couleur::Bleu);
         int jaune = solutionner(Couleur::Jaune);
-        
+
         int distParJoueur[4];
         distParJoueur[0] = rouge;
         distParJoueur[1] = vert;
         distParJoueur[2] = bleu;
         distParJoueur[3] = jaune;
 
+        for (int i = 0; i < 4; i++)
+        {
+            if (distParJoueur[i] < 0)
+            {
+                distParJoueur[i] = INFINI;
+            }
+        }
         int* minimum = std::min_element(begin(distParJoueur), end(distParJoueur));
 
         if (*minimum == rouge)
@@ -433,33 +471,6 @@ namespace TP1
 
         return gagnant;
 
-        /*
-        if (rouge == -1 && vert == -1 && bleu == -1 && jaune == -1)
-        {
-            return Couleur::Aucun;
-        }
-
-        if (rouge >= vert && rouge > bleu&& rouge > jaune)
-        {
-            return Couleur::Rouge;
-        }
-
-        if (vert > rouge&& vert >= bleu && vert > jaune)
-        {
-            return Couleur::Vert;
-        }
-
-        if (bleu > rouge&& bleu > vert&& bleu >= jaune)
-        {
-            return Couleur::Bleu;
-        }
-
-        if (jaune > rouge&& jaune > vert&& jaune > bleu)
-        {
-            return Couleur::Jaune;
-        }
-
-        */
     }
 
 
@@ -485,7 +496,7 @@ namespace TP1
         }
         return false;
     }
-    
+
 
     /**
      * \brief Ajuste le pointeur depart au Labyrinthe
