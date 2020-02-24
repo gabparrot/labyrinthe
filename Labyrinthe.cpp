@@ -349,7 +349,7 @@ namespace TP1
                 pieceCourante.setParcourue(false);
                 pieceCourante.setDistanceDuDebut(INFINI);
 
-                if (pieceCourantePtr != nullptr && !vPortes.empty())
+                if (pieceCourantePtr != nullptr)
                 {
                     listeAdjacence.insert({ nomIci , vPortes });
                 }
@@ -360,7 +360,10 @@ namespace TP1
 
         // Deuxième parcours de la liste d'adjacence ajoute les portes dans l'autre direction (si affiché dans A, récrire dans B)
         noeudCourant = noeudDepart;
-
+        if (joueur == Couleur::Vert)
+        {
+            cout << "DEBUG" << endl;
+        }
         do
         {
             if (noeudCourant == nullptr)
@@ -371,7 +374,6 @@ namespace TP1
             {
                 std::list<Porte> portesIci = noeudCourant->piece.getPortes();
                 std::list<Porte>::iterator iterPorte;
-                std::vector<Porte> vPortes;
 
                 if (!portesIci.empty())
                 {
@@ -384,7 +386,8 @@ namespace TP1
                             Piece destination = *destinationPtr;
                             string nomDestination = destination.getNom();
                             vector<Porte>& portesLaBas = listeAdjacence[nomDestination];
-                            portesLaBas.push_back(cettePorte);
+                            Porte porteInverse = Porte(joueur, &noeudCourant->piece);
+                            portesLaBas.push_back(porteInverse);
                         }
                     }
                 }
@@ -394,18 +397,11 @@ namespace TP1
         } while (noeudCourant != noeudDepart && noeudCourant != nullptr);
 
 
-        // Début du parcours en largeur
-
-
-        // Initialiser avec pièce départ visitée et distance avec elle-même de 0
-        depart->setDistanceDuDebut(0);
-
-
         // Créer une file réprésentant toutes les pièces qu'on peut atteindre à partir de la pièce courante
-
-        // Compteur de distance, augmente de 1 chaque fois qu'on avance
+        depart->setDistanceDuDebut(0);
         noeudCourant = noeudDepart;
 
+        // Remettre toutes les pièces à 0/false
         do
         {
             noeudCourant->piece.setDistanceDuDebut(0);
@@ -413,11 +409,13 @@ namespace TP1
             noeudCourant = noeudCourant->suivant;
 
         } while (noeudCourant != noeudDepart && noeudCourant != nullptr);
+        
+        // Début du parcours en largeur
         noeudCourant = noeudDepart;
         queue<Piece*> file;
         noeudDepart->piece.setParcourue(true);
         noeudDepart->piece.setDistanceDuDebut(0);
-        file.push(&noeudDepart->piece);
+        file.push(&(noeudDepart->piece));
         string nomArrivee = arrivee->getNom();
         int compteurDistance = 0;
 
