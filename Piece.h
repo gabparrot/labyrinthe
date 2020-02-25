@@ -1,9 +1,9 @@
 /**
  * \file Piece.h
  * \brief Ce fichier contient l'interface d'une pièce.
- * \author IFT-2008
+ * \author Gabriel Chevrette-Parot, Gabrielle Lévêque Huot
  * \version 0.1
- * \date janvier 2020
+ * \date 24 février 2020
  *
  */
 
@@ -20,48 +20,113 @@
 
 namespace TP1
 {
-/**
- *  \class Piece
- *  \brief Classe représentant une pièce dans un labyrinthe
+/*!
+ * \class Piece
+ * \brief classe représentant les Pièces
+ *
+ * La classe qui représentant une pièce dans un labyrinthe
  */
 class Piece
 {
 public:
 
-	//! Constructeur par défaut
+	/*!
+	 *  \brief Constructeur par défaut
+	 */
 	Piece();
 
-	//! Surcharge du constructeur
+	/*!
+	 * \brief Surchage
+	 *
+	 * Surcharge du constructeur
+	 *
+	 * \param nom : le nom de la pièce
+	 */
 	Piece(const std::string & nom);
 
-	//! Constructeur de copie
+	/*!
+	 * \brief Constructeur de copie
+	 *
+	 * Constructeur copie de la classe Piece
+	 *
+	 * \param source : un objet Porte
+	 */
 	Piece(const Piece & source);
 
-    //! Destructeur
+	/*!
+	 * \brief Destructeur
+	 *
+	 * Destructeur de la classe Piece
+	 *
+	 */
 	~Piece();
 
-    //! Surcharge de l'opérateur =
+	/*!
+	 * \brief Surchage
+	 *
+	 * Surcharge de l'opérateur =
+	 *
+	 * \param source : un objet Piece
+	 */
 	const Piece & operator=(const Piece & source);
 
-    //! Accesseur du nom d'une pièce
+	/*!
+	 * \brief Accesseur
+	 *
+	 * Accesseur du nom d'une pièce
+	 */
 	std::string getNom() const;
 
-    //! Pour initialiser l'attribut parcourue à true ou false
+	/*!
+	 * \brief Initialise l'attribut parcourue
+	 *
+	 * Initialise l'attribut parcourue à true ou false
+	 *
+	 * \param p : true ou false
+	 */
 	void setParcourue(bool p);
 
-    //! Pour initialiser l'attribut distanceDuDebut
+	/*!
+	 * \brief Initialise l'attribut distanceDuDebut
+	 *
+	 * Initialiser l'attribut distanceDuDebut
+	 *
+	 * \param d : entier standard
+	 */
 	void setDistanceDuDebut(int d);
 
-	//! Accéder au membre parcourue
+	/*!
+	 * \brief Accéder au membre parcourue
+	 *	
+	 * Méthode qui permet d'ajouter si un parcours est parcouru ou non
+	 *
+	 * True si parcourue ou False non parcourue
+	 */
 	bool getParcourue() const;
 
-	//! Accéder à la liste des portes qui partent de la pièce
+	/*!
+	 * \brief Accesseur
+	 *
+	 * Accéder à la liste des portes qui partent de la pièce
+	 *
+	 */
 	const std::list<Porte> & getPortes() const;
 
-    //! Accéder au membre distanceDuDebut
+	/*!
+	 * \brief Accesseur
+	 *
+	 * Accéder au membre distanceDuDebut
+	 *
+	 */
 	int getDistanceDuDebut() const;
 
-    //! Ajouter une porte à la liste des portes qui partent de la pièce
+	/*!
+	 * \brief Accesseur
+	 *
+	 * Ajoute une porte à la liste des portes qui partent de la pièce
+	 *
+	 * \param p : un objet Porte
+	 */
 	void ajoutePorte(const Porte & p);
 
 private:
@@ -75,8 +140,7 @@ private:
 	plusieurs fois par une même pièce et risquer de tourner en rond, et donc boucler sans fin. */
 
 	std::string nom; /*!< Le nom de la pièce. Il doit être unique pour un même labyrinthe.*/
-
-	int distanceDuDebut; /*!< Le nombre de déplacements qu'il est nécessaire d'effectuer depuis la pièce de départ pour se rendre à cette pièce. */
+	int distanceDuDebut; /*!< Le nombre de déplacements qu'il est nécessaire d'effectuer depuis la pièce de départ pour se rendre à cette pièce. */ 
 
 };
 

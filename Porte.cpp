@@ -1,9 +1,9 @@
 /**
  * \file Porte.cpp
  * \brief Ce fichier contient une implantation des méthodes de la classe Porte
- * \author Étudiant(e)
+ * \author Gabriel Chevrette-Parot, Gabrielle Lévêque Huot
  * \version 0.1
- * \date janvier 2020
+ * \date 24 février 2020
  *
  */
 
@@ -18,7 +18,6 @@ namespace TP1
      */
     Porte::Porte() {}
 	
-
      /**
      * \brief Constructeur de la classe Porte
      * \param[in] Couleur c : couleur de la porte
@@ -27,26 +26,25 @@ namespace TP1
      */
     Porte::Porte(Couleur c, Piece* d) : color(c), destination(d) {}
 	
-    /**
+     /**
      * \brief Constructeur de copie de la classe Porte
+     * \param[in] Porte source
+     * \return Objet Porte
      */
     Porte::Porte(const Porte& source)
     {
-    	//TODO P2. vérifier si on doit copier en profondeur la liste dans obj distinct ou si copie de référence
         *this = source;
     }
 	
-
      /**
      * \brief Destructeur de la classe Porte
      */
     Porte::~Porte() {};
 	
-
      /**
      * \brief surcharge de l'opérateur = entre la destination et la couleur de la porte
      * \param[in] Porte source
-     * \return Objet Porte
+     * \return un objet Porte
      */
     const Porte& Porte::operator=(const Porte& source)
     {
@@ -60,29 +58,28 @@ namespace TP1
         return *this;
     }
 
-
      /**
      * \brief surcharge de l'opérateur == correspondance entre la couleur de la porte et la destination
      * \param[in] Porte source
-     * \return True si la porte correspond selon sa couleur et sa destination sinon False 
+     * \return true si la porte correspond selon sa couleur et sa destination sinon false 
      */
     bool Porte::operator==(const Porte& source) const
     {
     	return((color == source.getCouleur() && destination == source.getDestination()) ? true: false);
     }
 
-
     /**
      * \brief Fonction accesseur récupérant la couleur de la Porte
+     * \return Couleur porte
      */
 	Couleur Porte::getCouleur() const
 	{
         return color;
 	}
 
-
      /**
      * \brief Fonction accesseur récupérant la destination de la Porte
+     * \return Piece Porte
      */
 	Piece* Porte::getDestination() const
 	{

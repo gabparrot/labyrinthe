@@ -1,9 +1,9 @@
 /**
  * \file Piece.cpp
  * \brief Ce fichier contient une implantation des méthodes de la classe Piece
- * \author Étudiant(e)
+ * \author Gabriel Chevrette-Parot, Gabrielle Lévêque Huot
  * \version 0.1
- * \date janvier 2020
+ * \date 24 février 2020
  *
  */
 
@@ -20,6 +20,8 @@ namespace TP1
 
      /**
      * \brief Surcharge du constructeur
+     * \param[in] string nom
+     * \return Objet Piece
      */
     Piece::Piece(const std::string& nom) : 
         nom(nom) 
@@ -30,6 +32,8 @@ namespace TP1
 
      /**
      * \brief Constructeur de copie de la classe Piece
+     * \param[in] Piece source
+     * \return Objet Piece
      */
 	Piece::Piece(const Piece& source)
     {
@@ -44,8 +48,6 @@ namespace TP1
         portes.clear();
     }
 
-
-	//TODO P2 Valider que 2 pièces n'ont pas le même nom ?
      /**
      * \brief surcharge de l'opérateur = correspondance entre les pièces et les portes
      * \param[in] Piece source
@@ -63,7 +65,8 @@ namespace TP1
 	}
 
     /**
-     * \brief Fonction accesseur récupérant le nom d'une pièce
+     * \brief Accesseur du nom d'une pièce
+     * \return String nom d'une pièce
      */
 	std::string Piece::getNom() const
 	{
@@ -71,7 +74,8 @@ namespace TP1
 	}
 
     /**
-     * \brief Initialiser l'attribut parcourue à true ou false
+     * \brief Initialise l'attribut parcourue à true ou false
+     * \param[in] bool p
      */
 	void Piece::setParcourue(bool p)
 	{
@@ -80,6 +84,7 @@ namespace TP1
 
     /**
      * \brief Initialiser l'attribut distanceDuDebut
+     * \param[in] int d
      */
     void Piece::setDistanceDuDebut(int d)
     {
@@ -87,8 +92,8 @@ namespace TP1
     }
 
     /**
-     * \brief Accéder au membre parcourue
-     * \return True si parcourue ou False non parcourue
+     * \brief Initialise l'attribut parcourue à true ou false
+     * \return bool true si parcourue ou false non parcourue
      */
 	bool Piece::getParcourue() const
 	{
@@ -97,7 +102,7 @@ namespace TP1
 
      /**
      * \brief Accéder à la liste des portes qui partent de la pièce
-     * \return Une liste contenant les portes qui partent de la pièce
+     * \return list : une liste contenant les portes qui partent de la pièce
      */
 	const std::list<Porte>& Piece::getPortes() const
 	{
@@ -106,6 +111,7 @@ namespace TP1
 
      /**
      * \brief Fonction accesseur récupérant la distance du début
+     * \return int distance du début
      */
 	int Piece::getDistanceDuDebut() const
 	{

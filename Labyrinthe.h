@@ -1,17 +1,16 @@
 /**
  * \file Labyrinthe.h
  * \brief Ce fichier contient l'interface d'un labyrinthe.
- * \author IFT-2008
+ * \author Gabriel Chevrette-Parot, Gabrielle Lévêque Huot
  * \version 0.1
- * \date janvier 2020
- * 
+ * \date 24 février 2020
+ *
  */
 
 #pragma once
 
 #ifndef LABYRINTHE_H_
 #define LABYRINTHE_H_
-
 
 // Fournis
 #include <iostream> // Pour les flux d'entrée/sortie
@@ -31,113 +30,179 @@ static const  int INFINI = std::numeric_limits<int>::max();
 
 namespace TP1
 {
-
-	/**
+	/*!
 	 * \class Labyrinthe
-	 * \brief Classe représentant un labyrinthe formé de plusieurs pièces dotées de portes de couleur.
+	 * \brief classe représentant un labyrinthe
+	 *
+	 * La classe représentant un labyrinthe formé de plusieurs pièces dotées de portes de couleur
 	 */
 	class Labyrinthe
 	{
 	public:
-		//! Constructeur par défaut
+		/*!
+		 *  \brief Constructeur par défaut
+		 */
 		Labyrinthe();
 
-		//! Constructeur de copie
+		/*!
+		 * \brief Constructeur de copie
+		 *
+		 * Constructeur copie de la classe Labyrinthe
+		 *
+		 * \param source : un objet Labyrinthe
+		 */
 		Labyrinthe(const Labyrinthe& source);
 
-		//! Destructeur
+		/*!
+		 * \brief Destructeur
+		 *
+		 * Destructeur de la classe Labyrinthe
+		 *
+		 */
 		~Labyrinthe();
 
-		//! Surcharge de l'opérateur =
+		/*!
+		 * \brief Surchage
+		 *
+		 * Surcharge de l'opérateur =
+		 *
+		 * \param source : un objet Labyrinthe
+		 */
 		const Labyrinthe& operator =(const Labyrinthe& source);
 
-		//! Méthode fournie dans le fichier Labyrinthe.cpp, elle charge
-		//! un fichier contenant un labyrinthe d'une certaine couleur
-		//!
-		//! Voici comment un labyrinthe est mis en mémoire:
-		//! 1- ChargerLabyrinthe() appelle ajoutePieceLabyrinthe()
-		//! 2- ajoutePieceLabyrinthe() ajoute la pièce si elle n'existe pas déjà.
-		//! 3- Si la pièce existe déjà, ajoutePieceLabyrinthe() n'ajoute pas de pièce et laisse le programme rouler
-		//! 4- On sort de ajoutePieceLabyrinthe() et ChargerLabyrinthe() fait quelques opérations pour ensuite appeler ajoutePassage()
-		//! 5- ajoutePassage() ajoute les portes à la pièce qui à été préalablement créée ou qui existait déjà
-		//! 6- La pièce et les portes sont créées et on passe à une autre pièce
+		/*!
+		 * \brief Charge un fichier
+		 *
+		 * Charge un fichier contenant un labyrinthe d'une certaine couleur
+		 *
+		 * \param couleur : Peut prendre quatre valeurs : Rouge, Bleu, Jaune ou Vert
+		 * \param entree : un fichier .txt contenant le labyrinthe d'une certaine couleur
+		 */
 		void chargeLabyrinthe(Couleur couleur, std::ifstream& entree);
 
-		//! Cette fonction doit ajouter la pièce p à un labyrinthe. Dans le cas où
-		//! une pièce du labyrinthe porte déjà un même nom, la méthode ne doit
-		//! rien faire (faire un simple return, sans générer d'exception).
+		/*!
+		 * \brief Ajoute une pièce à un labyrinthe
+		 *
+		 * Ajouter la pièce p à un labyrinthe si elle n'est pas déjà présente
+		 *
+		 * \param p : objet Pièce à ajouter au labyrinthe
+		 */
 		void ajoutePieceLabyrinthe(const Piece& p);
-
-		//! Cette méthode doit solutionner un labyrinthe pour le joueur spécifié par joueur.
-		//! Elle doit donc trouver en combien d'étapes au minimum le joueur spécifié peut solutionner
-		//! le labyrinthe, en ne passant bien sûr que par les portes qui correspondent à sa couleur.
-		//!
-		//! Si un labyrinthe ne peut pas être solutionné par le joueur, il faut retourner -1. Dans ce cas,
-		//! nous ne considèrerons pas cela comme un appel anormal de la fonction.
-		//! Vous devez utiliser l'algorithme suivant pour solutionner le labyrinthe, en utilisant une file "queue" de la STL:
-		//! 1. Enfiler la pièce de départ en lui associant une distance du départ de zéro.
-		//! 2. Faire
-		//!      1. Défiler une pièce
-		//!      2. Enfiler toutes les pièces qui sont accessibles à partir de cette pièce à l'aide d'une porte
-		//!         de la couleur du joueur, et qui n'ont pas été déjà parcourues, en leur associant la distance
-		//! 		du départ de la pièce défilée plus un.
-		//!
-		//! 		Remarquez qu'il faut faire une vérification double ici. Il faut d'abord chercher les portes dans la liste
-		//! 		de portes de la pièce défilée, puis il faut ensuite aussi chercher les portes dans les listes de portes de
-		//! 		toutes les pièces pour voir s'il y en aurait qui mènent à la pièce défilée. Ceci est nécessaire car les portes
-		//! 		ne sont pas à sens unique, mais la méthode qui charge un labyrinthe fournie ne les ajoute qu'une seule fois
-		//!			dans le modèle d'implantation. Afin de savoir si une pièce a déjà été parcourue ou non, employez le champ
-		//!			booléen parcourue. N'enfilez que des pièces pour lesquelles ce champ a false comme valeur, puis au moment
-		//!			où vous l'enfilez, appliquez-lui la valeur true. Aussi, n'oubliez pas, avant de commencer l'algorithme, de
-		//!			mettre ce champ à false pour toutes les pièces du labyrinthe.
-		//!
-		//!	Tant qu'il reste des pièces dans la file et que la pièce d'arrivée n'a pas encore été atteinte (défilée).
+	
+		/*!
+		 * \brief Solutionner un labyrinthe
+		 *
+		 * solutionner un labyrinthe pour le joueur spécifié par joueur.
+		 *
+		 * \param p : objet Pièce à ajouter au labyrinthe
+		 * \return Nombre d'étapes au minimum pour le joueur spécifié peut solutionner le labyrinthe
+		 * ou -1 si un labyrinthe ne peut pas être solutionné par le joueur
+		 */
 		int solutionner(Couleur joueur);
 
+
+		/*!
+		 * \brief Calcule le chemin le plus court
+		 *
+		 * Calcule le chemin le plus court pour un joueur.
+		 *
+		 * \param adj Liste liste adjacente
+		 * \param taille 
+		 * \return un vecteur de vecteur
+		 */
 		std::vector<int> Labyrinthe::calcCheminPlusCourt(std::vector<std::vector<std::pair<int, int>>> &adjListe, int taille);
 
-
-		//! Cette méthode devra appeler quatre fois la méthode solutionner(), une fois par couleur, pour déterminer
-		//! quel est le joueur qui peut solutionner le labyrinthe en le moins de déplacements. Si aucun joueur ne peut
-		//! solutionner un labyrinthe, retournez Aucun. Dans le cas où deux joueurs ou plus peuvent arriver ex-equo,
-		//! accordez la priorité au joueur rouge, puis au joueur vert, puis au bleu, puis au jaune. Par exemple,
-		//! si le joueur rouge peut solutionner le labyrinthe en 12 coups, le joueur vert en 8 coups, le joueur bleu en 9
-		//! coups, puis le jaune en 8 coups aussi, c'est le vert qui gagne.
+		/*!
+		 * \brief Trouve le joueur gagnant
+		 *
+		 * Détermine quel est le joueur qui peut solutionner le labyrinthe en le moins de déplacements
+		 *
+		 * \return la couleur du gagnant
+		 */
 		Couleur trouveGagnant();
 
-		//! Accesseur pour le membre depart
+		/*!
+		 * \brief Accesseur
+		 *
+		 * Accesseur pour le membre depart
+		 *
+		 * \return un pièce de départ
+		 */
 		Piece* getDepart() const { return depart; }
 
-		//! Accesseur pour le membre arrivee
+		/*!
+		 * \brief Accesseur
+		 *
+		 * Accesseur pour le membre arrivee
+		 *
+		 * \return un pièce d'arrivée
+		 */
 		Piece* getArrivee() const { return arrivee; }
 
-		//! Vérifie si une pièce portant le nom de la pièce fournie se trouve dans le labyrinthe
+		/*!
+		 * \brief  Vérifie si une pièce se trouve dans le labyrinthe
+		 *
+		 * Méthode qui vérifie si une pièce portant le nom de la pièce fournie se trouve dans le labyrinthe
+		 *
+		 * \return true si la pièce est dans le labyrinthe sinon false 
+		 */
 		bool appartient(const Piece& p) const;
 
 	private:
 
-		//! Méthode privée fournie dans le fichier Labyrinthe.cpp, elle ajoute un passage
-		//! dans un labyrinthe. Elle est appelée par la méthode chargeLabyrinthe()
+		/*!
+		 * \brief Ajoute un passage dans un labyrinthe
+		 *
+		 * \param Couleur couleur Couleur de la porte à ajouter
+		 * \param int i1
+		 * \param int j1
+		 * \param int i2
+		 * \param int j2
+		 */
 		void ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2);
 
-		//! Méthode privée, elle sert pour charger un labyrinthe. Ajuste le pointeur depart d'un labyrinthe
-		//! pour qu'il contienne l'adresse de la pièce correspondant au nom spécifié par nom. Lancer une
-		//! exception logic_error si aucune pièce du labyrinthe ne porte le nom nom.
+		/*!
+		 * \brief Ajuste le pointeur depart d'un labyrinthe
+		 *
+		 * Ajuste le pointeur depart d'un labyrinthe pour qu'il
+		 * contienne l'adresse de la pièce correspondant au nom spécifié par nom
+		 *
+		 * \param string& nom : nom de la pièce
+		 */
 		void placeDepart(const std::string& nom);
 
-		//! Même chose que pour la fonction placeDepart décrite plus haut, mais pour le pointeur arrivee d'un labyrinthe.
+		/*!
+		 * \brief Ajuste le pointeur arrivee d'un labyrinthe
+		 *
+		 * Ajuste le pointeur arrivee d'un labyrinthe pour qu'il
+		 * contienne l'adresse de la pièce correspondant au nom spécifié par nom
+		 *
+		 * \param string& nom : nom de la pièce
+		 */
 		void placeArrivee(const std::string& nom);
 
-		/**
+
+
+		/*!
 		 * \class NoeudListePieces
 		 * \brief Noeud typique d'une liste chaînée circulaire
+		 *
 		 */
 		class NoeudListePieces
 		{
 		public:
-
+			/*!
+			*  \brief Constructeur par défaut
+			*/
 			NoeudListePieces();
 			
+			/*!
+			* \brief Constructeur de copie
+			*
+			* Constructeur copie de la classe NoeudListePieces
+			*
+			* \param source : un objet NoeudListePieces
+			*/
 			NoeudListePieces(const NoeudListePieces& source);
 
 			Piece piece; //!< La piece contenue dans un noeud d'une liste chaînée circulaire.
@@ -145,11 +210,15 @@ namespace TP1
 			NoeudListePieces* suivant = nullptr; //!< Le noeud suivant
 		};
 
-
-		//! Méthode privée. Retourne l'adresse du noeud de la liste de pièces contenue dans le labyrinthe
-		//! qui correspond à la pièce portant le nom nom, la méthode doit lancer une exception invalid_argument si le nom de
-		//! la pièce est vide. La méthode doit lancer également une exception logic_error si la pièce est introuvable.
-		//! Remarquez qu'il faut retourner l'adresse du noeud et non l'adresse de la pièce.
+		/*!
+		* \brief Trouve l'adresse de la pièce dans le labyrinthe
+		*
+		* Retourne l'adresse du noeud de la liste de pièces contenue dans le labyrinthe
+		* qui correspond à la pièce portant le nom nom
+		*
+		* \param nom : nom de la pièce
+		* \return L'adresse du noeud de la liste de pièces contenue dans le labyrinthe
+		*/
 		NoeudListePieces* trouvePiece(const std::string& nom) const;
 
 		NoeudListePieces* dernier = nullptr; /*!< Le dernier noeud de la liste chaînée circulaire.*/

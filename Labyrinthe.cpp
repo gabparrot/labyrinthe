@@ -1,9 +1,9 @@
 /**
  * \file Labyrinthe.cpp
  * \brief Le code des méthodes membres et privés de la classe Labyrinthe.
- * \author IFT-2008, Étudiant(e)
+ * \author Gabriel Chevrette-Parot, Gabrielle Lévêque Huot
  * \version 0.1
- * \date janvier 2020
+ * \date 24 février 2020
  *
  */
 
@@ -23,12 +23,12 @@ namespace TP1
     //	Méthodes fournies
     // -------------------------------------------------------------------------------------------------
 
- /**
-  * \fn Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream & entree)
-  * \brief Fonction déjà fournie permettant de charger un labyrinthe depuis un fichier
-  * \param[in] couleur La couleur du jouer auquel le labyrinthe chargé s'applique
-  * \param[in] entree Fichier contenant la définition du labyrinthe
-  */
+    /**
+    * \fn Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream & entree)
+    * \brief Fonction déjà fournie permettant de charger un labyrinthe depuis un fichier
+    * \param[in] couleur La couleur du jouer auquel le labyrinthe chargé s'applique
+    * \param[in] entree Fichier contenant la définition du labyrinthe
+    */
     void Labyrinthe::chargeLabyrinthe(Couleur couleur, std::ifstream& entree)
     {
         int nbCols, nbRangs;
@@ -156,8 +156,7 @@ namespace TP1
             }
         }
     }
-
-
+    
     /**
      * \fn Labyrinthe::ajoutePassage(Couleur couleur, int i1, int j1, int i2, int j2)
      * \brief Fonction déjà fournie permettant d'ajouter une porte à une pièce
@@ -191,8 +190,6 @@ namespace TP1
 
         piece1->piece.ajoutePorte(nouvellePorte);
     }
-
-
 
     /**
      * \fn Labyrinthe::ajoutePieceLabyrinthe(Piece & p)
@@ -229,24 +226,21 @@ namespace TP1
     {
     }
 
-
     /**
      * \brief Constructeur de copie de la classe Labyrinthe
+     * \param[in]Labyrinthe source un objet Labyrinthe
      */
     Labyrinthe::Labyrinthe(const Labyrinthe& source)
     {
         *this = source;
     }
 
-
     /**
      * \brief Destructeur de la classe Labyrinthe
      */
     Labyrinthe::~Labyrinthe()
     {
-        //TODO Libérer la mémoire correctement
     }
-
 
     /**
      * \brief surcharge de l'opérateur = entre les pièces et le labyrinthe
@@ -258,20 +252,17 @@ namespace TP1
         depart = source.getDepart();
         arrivee = source.getArrivee();
         dernier = source.trouvePiece(source.getArrivee()->getNom());
-        //TODO copier source.NoeudListePieces par iteration?
-
         return *this;
     }
 
     /**
-     * \brief Nombre d'étape minimum pour solutionner le labyrinthe pour le joueur en ne passant que par les portes qui correspondent à sa couleur
+     * \brief Nombre d'étape minimum pour solutionner le labyrinthe pour le joueur 
+     * en ne passant que par les portes qui correspondent à sa couleur
      * \param[in] Couleur joueur
      * \return int représantant le nombre d'étape minimum
      */
     int Labyrinthe::solutionner(Couleur joueur)
     {
-
-
         NoeudListePieces* noeudCourant = trouvePiece(getDepart()->getNom());
         NoeudListePieces* noeudDepart = noeudCourant;
 
@@ -420,8 +411,6 @@ namespace TP1
         return -1;
     }
 
-
-
     /**
      * \brief Trouve le joueur qui peut solutionner le labyrinthe en le moins de déplacements. Si égalité,
      *	priorité au joueur rouge, vert, bleu, puis au jaune
@@ -473,10 +462,9 @@ namespace TP1
 
     }
 
-
     /**
      * \brief Vérifie si une pièce portant le nom de la pièce fournie se trouve dans le labyrinthe
-     * \return True si la pièce fournie se trouve dans le labyrinthe sinon False
+     * \return true si la pièce fournie se trouve dans le labyrinthe sinon false
      */
     bool Labyrinthe::appartient(const Piece& p) const
     {
@@ -496,7 +484,6 @@ namespace TP1
         }
         return false;
     }
-
 
     /**
      * \brief Ajuste le pointeur depart au Labyrinthe
@@ -519,7 +506,6 @@ namespace TP1
         //TODO depart = adresse pointeur piece dans noeud depart, doit faire methode getter data dans noeud
     }
 
-
     /**
      * \brief Ajuste le pointeur arrivee au Labyrinthe
      * \param[in] String nom: le nom de la pièce
@@ -540,17 +526,18 @@ namespace TP1
         }
     }
 
+    /*!
+    *  \brief Constructeur par défaut
+    */
     Labyrinthe::NoeudListePieces::NoeudListePieces()
     {
     }
 
-
     /**
-     * \brief Trouver l'adresse du noeud de la liste de pièces du labyrinthe correspondant à la pièce portant le nom nom
-     * \param[in] String nom: le nom de la pièce
-     * \return NoeudListePieces : Adresse du noeud de la liste de pièces du labyrinthe correspondant à la pièce
-     */
-
+    * \brief Trouver l'adresse du noeud de la liste de pièces du labyrinthe correspondant à la pièce portant le nom nom
+    * \param[in] String nom: le nom de la pièce
+    * \return NoeudListePieces : Adresse du noeud de la liste de pièces du labyrinthe correspondant à la pièce
+    */
     Labyrinthe::NoeudListePieces* Labyrinthe::trouvePiece(const std::string& nom) const
     {
         if (nom.empty())
@@ -579,6 +566,11 @@ namespace TP1
 
     }
 
+    /*!
+    * \brief Constructeur copie de la classe NoeudListePieces
+    * \param[in] NoeudListePieces source : un objet NoeudListePieces
+    * \return NoeudListePieces
+    */
     Labyrinthe::NoeudListePieces::NoeudListePieces(const NoeudListePieces& source)
     {
         *this = source;
